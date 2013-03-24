@@ -12,16 +12,17 @@ import javax.swing.JComponent;
 
 public class VertexView extends JComponent implements Observer {
 	
-	private int SIZE = 75;
-	private int BORDER_SIZE = SIZE / 6;
+	private static final long serialVersionUID = 1292220919565527946L;
+	public static final int SIZE = 75;
+	public static final int BORDER_SIZE = SIZE / 6;
 	
 	private VertexModel model;
-	private VertexControllerInterface controller;
+	//private VertexControllerInterface controller;
 	private Color color = Color.WHITE;
 	private Color borderColor = Color.BLACK;
 	
-	public VertexView(VertexController controller, VertexModel model) {
-		this.controller = controller;
+	public VertexView(VertexControllerInterface controller, VertexModel model) {
+		//this.controller = controller;
 		this.model = model;
 		model.addObserver(this);
 		setOpaque(false);

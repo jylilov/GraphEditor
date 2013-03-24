@@ -20,7 +20,7 @@ public class VertexController implements VertexControllerInterface {
 
 	@Override
 	public void setLocation(int x, int y) {
-		view.setLocation(x, y);
+		model.setLocation(x, y);
 	}
 
 	@Override
