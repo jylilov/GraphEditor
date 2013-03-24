@@ -79,7 +79,13 @@ public class EdgeView extends JComponent implements Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (arg != null) setBounds();
+		if (arg != null) {
+			EdgeModelEvent e = (EdgeModelEvent)arg;
+			switch (e) {
+			case CHANGED_LOCATION:
+				setBounds();
+			}
+		}
 		repaint();
 	}
 
