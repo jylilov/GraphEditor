@@ -1,0 +1,86 @@
+package by.bsuir.iit.jylilov.pdiis.grapheditor;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JComponent;
+
+public class EdgeView extends JComponent implements Observer{
+
+	private static final long serialVersionUID = 6159972103656262134L;
+	
+	private EdgeModel model;
+	//private EdgeControllerInterface controller;
+	private Color color = Color.BLACK;
+	
+	public EdgeView(EdgeControllerInterface controller, EdgeModel model) {
+		setOpaque(false);
+		this.model = model;
+		//this.controller = controller;
+		model.addObserver(this);
+		setBounds();
+	}
+	
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
+	public void setBounds() {
+		int x1, y1, x2, y2;
+		x1 = Math.min(model.getVertex1().getX(), model.getVertex2().getX());
+		y1 = Math.min(model.getVertex1().getY(), model.getVertex2().getY());
+		x2 = Math.max(model.getVertex1().getX(), model.getVertex2().getX());
+		y2 = Math.max(model.getVertex1().getY(), model.getVertex2().getY());
+		setBounds(x1, y1, x2, y2);
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		int x1, y1, x2, y2;
+		x1 = model.getVertex1().getX() - getX() + VertexView.SIZE / 2;
+		y1 = model.getVertex1().getY() - getY() + VertexView.SIZE / 2;
+		x2 = model.getVertex2().getX() - getX() + VertexView.SIZE / 2;
+		y2 = model.getVertex2().getY() - getY() + VertexView.SIZE / 2;
+		
+		Graphics2D g2d = (Graphics2D)g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setStroke(new BasicStroke(VertexView.BORDER_SIZE));
+		g2d.setColor(color);
+		g2d.drawLine(x1, y1, x2, y2);
+	}
+	
+	@Override
+	public boolean contains(int x, int y) {
+		double a, b, c;
+		int x1, x2, y1, y2; 	
+		int minX, minY;
+		x1 = model.getVertex1().getX();
+		x2 = model.getVertex2().getX();
+		y1 = model.getVertex1().getY();
+		y2 = model.getVertex2().getY();
+		minX = Math.min(x1, x2);
+		minY = Math.min(y1, y2);
+		double s, r1, r2, r;
+		a = y1 - y2; b = x2 - x1; c = x1 * y2 - x2 * y1;
+		x += minX; y += minY;
+		s = Math.abs((a * x + b * y + c) / Math.sqrt(a * a + b * b));
+		r = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow(y1 - y2, 2));
+		r1 = Math.sqrt(Math.pow((x1 - x), 2) + Math.pow(y1 - y, 2));
+		r2 = Math.sqrt(Math.pow((x2 - x), 2) + Math.pow(y2 - y, 2));
+		r1 = Math.sqrt(Math.pow(r1, 2) - Math.pow(s, 2));
+		r2 = Math.sqrt(Math.pow(r2, 2) - Math.pow(s, 2));
+		return s <= 1.25 * VertexView.SIZE  && r1 <= r && r2 <= r;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg != null) setBounds();
+		repaint();
+	}
+
+}
