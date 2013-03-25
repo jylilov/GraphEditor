@@ -1,27 +1,28 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+
 public class GraphModel extends Observable {
-	
+
 	List<VertexModel> vertices;
 	List<EdgeModel> edges;
-	
+
 	public GraphModel() {
 		vertices = new ArrayList<VertexModel> ();
 		edges = new ArrayList<EdgeModel> ();
 	}
-	
+
 	public void addVertex(VertexModel vertex) {
 		vertices.add(vertex);
 	}
-	
+
 	public void addEdge(EdgeModel edge) {
 		edges.add(edge);
 	}
-	
+
 	public boolean isEdgeExist(VertexModel v1, VertexModel v2) { 
 		for (EdgeModel i : edges) {
 			if ((i.getVertex1() == v1 && i.getVertex2() == v2) || 

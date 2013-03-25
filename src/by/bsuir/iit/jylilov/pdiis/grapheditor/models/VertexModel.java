@@ -1,4 +1,4 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
 import java.util.Observable;
 
@@ -37,8 +37,4 @@ public class VertexModel extends Observable {
 		return identifier;
 	}
 	
-}
-
-enum VertexModelEvent {
-	CHANGED_LOCATION, CHANGED_IDENTIFIER;
 }

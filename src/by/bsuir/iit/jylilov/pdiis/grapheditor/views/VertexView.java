@@ -1,4 +1,4 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,6 +9,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JComponent;
+
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModelEvent;
 
 public class VertexView extends JComponent implements Observer {
 	
@@ -66,6 +69,9 @@ public class VertexView extends JComponent implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
+		if(!(arg instanceof VertexModelEvent)){
+			return;
+		}
 		VertexModelEvent e = (VertexModelEvent)arg;
 		
 		switch (e) {

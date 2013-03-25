@@ -8,6 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.GraphController;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
+
 public class GraphEditor {
 
 	public static void main(String[] args) {

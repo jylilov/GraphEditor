@@ -1,4 +1,4 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -10,11 +10,14 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphView;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
+
 public class GraphController implements MouseListener{
-	
-	private enum EditMode {
-		VERTEX_MODE, EDGE_MODE;
-	}
 	
 	private class VertexController implements MouseListener, MouseMotionListener {
 		
@@ -101,6 +104,12 @@ public class GraphController implements MouseListener{
 	private VertexController vertexController = new VertexController();
 	
 	public void moveSelected(int x, int y) {
+		if (x < 0 || y < 0)
+			for (VertexView i : selectedVertices) {
+				VertexModel m = i.getModel();
+				if (x + m.getX() < 0) x = - m.getX();
+				if (y + m.getY() < 0) y = - m.getY();
+			}
 		for (VertexView i : selectedVertices) {
 			VertexModel m = i.getModel();
 			m.setLocation(x + m.getX(), y + m.getY());

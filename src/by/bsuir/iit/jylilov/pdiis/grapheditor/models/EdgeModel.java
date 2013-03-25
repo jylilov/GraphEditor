@@ -1,4 +1,4 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -41,8 +41,4 @@ public class EdgeModel extends Observable implements Observer{
 		notifyObservers((e == VertexModelEvent.CHANGED_LOCATION) ? EdgeModelEvent.CHANGED_LOCATION : null);
 	}
 	
-}
-
-enum EdgeModelEvent {
-	CHANGED_LOCATION;
 }

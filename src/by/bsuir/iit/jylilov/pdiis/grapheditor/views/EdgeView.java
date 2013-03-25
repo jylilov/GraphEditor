@@ -1,4 +1,4 @@
-package by.bsuir.iit.jylilov.pdiis.grapheditor;
+package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -9,6 +9,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JComponent;
+
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModelEvent;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
 
 public class EdgeView extends JComponent implements Observer{
 
