@@ -17,25 +17,30 @@ public class VertexView extends JComponent implements Observer {
 	public static final int BORDER_SIZE = SIZE / 6;
 	
 	private VertexModel model;
-	//private VertexControllerInterface controller;
 	private Color color = Color.WHITE;
 	private Color borderColor = Color.BLACK;
 	
-	public VertexView(VertexControllerInterface controller, VertexModel model) {
-		//this.controller = controller;
-		this.model = model;
+	public VertexView(int x, int y) {
+		this.model = new VertexModel(x, y);
 		model.addObserver(this);
+		
 		setOpaque(false);
 		setBounds(0, 0, SIZE, SIZE);
 		setLocation(model.getX(), model.getY());
 	}
 	
 	public void setColor(Color color) {
-		this.color = color;		
+		this.color = color;
+		repaint();
 	}
 
 	public void setBorderColor(Color color) {
 		borderColor = color;
+		repaint();
+	}
+	
+	public VertexModel getModel() {
+		return model;
 	}
 	
 	@Override

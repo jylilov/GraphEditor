@@ -15,15 +15,18 @@ public class EdgeView extends JComponent implements Observer{
 	private static final long serialVersionUID = 6159972103656262134L;
 	
 	private EdgeModel model;
-	//private EdgeControllerInterface controller;
 	private Color color = Color.BLACK;
 	
-	public EdgeView(EdgeControllerInterface controller, EdgeModel model) {
+	public EdgeView(VertexModel v1, VertexModel v2) {
 		setOpaque(false);
-		this.model = model;
-		//this.controller = controller;
+		model = new EdgeModel(v1, v2);
 		model.addObserver(this);
+		
 		setBounds();
+	}
+	
+	public EdgeModel getModel() {
+		return model;
 	}
 	
 	public void setColor(Color color) {
@@ -36,7 +39,7 @@ public class EdgeView extends JComponent implements Observer{
 		y1 = Math.min(model.getVertex1().getY(), model.getVertex2().getY());
 		x2 = Math.max(model.getVertex1().getX(), model.getVertex2().getX());
 		y2 = Math.max(model.getVertex1().getY(), model.getVertex2().getY());
-		setBounds(x1, y1, x2, y2);
+		setBounds(x1 - VertexView.SIZE, y1 - VertexView.SIZE, x2 - x1 + 2 * VertexView.SIZE, y2 - y1 + 2 * VertexView.SIZE);
 	}
 	
 	@Override
