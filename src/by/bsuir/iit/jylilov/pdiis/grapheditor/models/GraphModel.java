@@ -22,6 +22,10 @@ public class GraphModel extends Observable {
 	public void addEdge(EdgeModel edge) {
 		edges.add(edge);
 	}
+	
+	public int getVerticesCount() {
+		return vertices.size();
+	}
 
 	public boolean isEdgeExist(VertexModel v1, VertexModel v2) { 
 		for (EdgeModel i : edges) {

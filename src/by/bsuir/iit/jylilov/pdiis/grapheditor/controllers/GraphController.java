@@ -1,114 +1,104 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JComponent;
 
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModelEvent;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class GraphController implements MouseListener{
-	
-	private class VertexController implements MouseListener, MouseMotionListener {
-		
-		private int dx, dy;
+public class GraphController implements ControllerInterface {
 
-		@Override
-		public void mouseClicked(MouseEvent e) {}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			VertexView vertex = (VertexView)e.getComponent();
-			if (mode == EditMode.EDGE_MODE) {
-				if (isSelected(vertex))
-					vertex.setBorderColor(Color.RED); 
-				else if (selectedVertices.size() == 1) {
-					for (VertexView i : selectedVertices) {
-						if (model.isEdgeExist(i.getModel(), vertex.getModel())) {
-							vertex.setBorderColor(Color.RED);
-						} else
-							vertex.setBorderColor(Color.GREEN);
-					}
-				} else
-					vertex.setBorderColor(Color.GREEN);
-			}
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			VertexView vertex = (VertexView)e.getComponent(); 
-			vertex.setBorderColor((isSelected(vertex)) ? Color.BLUE : Color.BLACK);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			VertexView vertex = (VertexView)e.getComponent();
-			if (mode == EditMode.VERTEX_MODE) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					dx = e.getX();
-					dy = e.getY();
-					if (!e.isControlDown() && !isSelected(vertex)) deselectAll();
-					select(vertex);
-				} 
-				else if (e.getButton() == MouseEvent.BUTTON3) {
-					deselectAll();
-				}
-			} else if (mode == EditMode.EDGE_MODE) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (selectedVertices.size() == 1) {
-						
-						if (!isSelected(vertex)) {
-							for (VertexView i : selectedVertices) {
-								if (!model.isEdgeExist(i.getModel(), vertex.getModel()))
-										addEdge(vertex.getModel(), i.getModel());
-								else return;
-							}
-							deselectAll();
-						}
-					} else {				
-						deselectAll();
-						select(vertex);
-						vertex.setBorderColor(Color.RED);
-					}
-				}
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {}
-
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			if (mode == EditMode.VERTEX_MODE) moveSelected(e.getX() - dx, e.getY() - dy);
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e) {}
-		
-	}
-	
 	private GraphModel model;
 	private GraphView view;
 	private EditMode mode = EditMode.VERTEX_MODE;
+	private boolean isCreatingEdge = false;
+	private VertexModel hiddenVertex;
+	private EdgeView edgeToCreate;
+
+	private Observer observerForChangePrefferedSize = new Observer() {
+		int maxX = 0, maxY = 0;
+
+		@Override
+		public void update(Observable arg0, Object arg1) {
+			VertexModelEvent e = (VertexModelEvent)arg1;
+			VertexModel model = (VertexModel)arg0;
+			boolean isChanged = false;
+			if (e == VertexModelEvent.CHANGED_LOCATION) {
+				if (maxX < model.getX()) {
+					maxX = model.getX();
+					isChanged = true;
+				}
+				if (maxY < model.getY()) {
+					maxY = model.getY();
+					isChanged = true;
+				}
+			}
+			if (isChanged) {
+				view.setPreferredSize(new Dimension(maxX + VertexView.SIZE * 2, maxY + VertexView.SIZE * 2));
+				view.revalidate();
+			}
+		}
+		
+	};
+
+	public EdgeView getEdgeToCreate() {
+		return edgeToCreate;
+	}
+	
+	public GraphModel getModel() {
+		return model;
+	}
+
+	public void setEdgeToCreate(EdgeView edgeToCreate) {
+		this.edgeToCreate = edgeToCreate;
+	}
+
+	public VertexModel getHiddenVertex() {
+		return hiddenVertex;
+	}
+
+	public void setHiddenVertex(VertexModel creatingVertex) {
+		this.hiddenVertex = creatingVertex;
+	}
+
 	private List<VertexView> selectedVertices = new ArrayList<VertexView> ();
-	private VertexController vertexController = new VertexController();
+	private EdgeView selectedEdge;
+	private VertexController vertexController = new VertexController(this);
+	private EdgeController edgeController = new EdgeController(this);
+	private ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
+	private ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
+	
+	public EditMode getMode() {
+		return mode;
+	}
+	
+	public boolean isCreatingEdge() {
+		return isCreatingEdge;
+	}
+
+	public void setCreatingEdge(boolean isCreatingEdge) {
+		this.isCreatingEdge = isCreatingEdge;
+	}
 	
 	public void moveSelected(int x, int y) {
 		if (x < 0 || y < 0)
 			for (VertexView i : selectedVertices) {
 				VertexModel m = i.getModel();
-				if (x + m.getX() < 0) x = - m.getX();
-				if (y + m.getY() < 0) y = - m.getY();
+				x = Math.max(x, - m.getX());
+				y = Math.max(y, - m.getY());
 			}
 		for (VertexView i : selectedVertices) {
 			VertexModel m = i.getModel();
@@ -122,6 +112,19 @@ public class GraphController implements MouseListener{
 			vertex.setBorderColor(Color.BLUE);
 			view.setComponentZOrder(vertex, 0);
 		};
+	}
+	
+	public void select(EdgeView edge) {
+		selectedEdge = edge;
+		edge.setColor(Color.BLUE);
+		view.setComponentZOrder(edge, model.getVerticesCount());
+	}
+	
+	public void deselectEdge() {
+		if (selectedEdge != null) {
+			selectedEdge.setColor(Color.BLACK);
+			selectedEdge = null;
+		}
 	}
 	
 	public boolean isSelected(VertexView vertex) {
@@ -139,10 +142,16 @@ public class GraphController implements MouseListener{
 	}
 	
 	public void deselectAll() {
+		if (isCreatingEdge) {
+			view.remove(edgeToCreate);
+			view.repaint();
+			isCreatingEdge = false;
+		}
 		for (VertexView i : selectedVertices) {
 			i.setBorderColor(Color.BLACK);
 		}
 		selectedVertices.clear();
+		deselectEdge();
 	}
 	
 	public void setVertexEditMode() {
@@ -159,6 +168,7 @@ public class GraphController implements MouseListener{
 		this.model = model;
 		view = new GraphView(this, model);
 		view.addMouseListener(this);
+		view.addMouseMotionListener(this);
 	}
 	
 	public JComponent getView() {
@@ -169,6 +179,7 @@ public class GraphController implements MouseListener{
 		VertexView v = new VertexView(x, y);
 		model.addVertex(v.getModel());
 		view.add(v, 0);
+		v.getModel().addObserver(observerForChangePrefferedSize);
 		v.addMouseListener(vertexController);
 		v.addMouseMotionListener(vertexController);
 		view.repaint();
@@ -178,27 +189,54 @@ public class GraphController implements MouseListener{
 		EdgeView edge = new EdgeView(v1, v2);
 		model.addEdge(edge.getModel());
 		view.add(edge);
+		edge.addMouseListener(edgeController);
+		edge.addMouseMotionListener(edgeController);
 		view.repaint();
+	}
+	
+	private ControllerInterface getCurrentController() {
+		switch(mode) {
+		case EDGE_MODE:
+			return graphControllerInEdgeMode;
+		case VERTEX_MODE:
+			return graphControllerInVertexMode;
+		default:
+			return null;
+		}		
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {
+		getCurrentController().mouseClicked(e);
+	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {
+		getCurrentController().mouseEntered(e);
+	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {
+		getCurrentController().mouseExited(e);
+	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		deselectAll();
-		if (mode == EditMode.VERTEX_MODE) {
-			if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
-				addVertex(e.getX() - VertexView.SIZE / 2, e.getY() - VertexView.SIZE / 2);
-		}
+		getCurrentController().mousePressed(e);
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		getCurrentController().mouseReleased(e);
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		getCurrentController().mouseDragged(e);
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		getCurrentController().mouseMoved(e);
+	}
 }

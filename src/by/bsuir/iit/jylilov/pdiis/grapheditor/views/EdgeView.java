@@ -35,6 +35,7 @@ public class EdgeView extends JComponent implements Observer{
 	
 	public void setColor(Color color) {
 		this.color = color;
+		repaint();
 	}
 	
 	public void setBounds() {
@@ -64,24 +65,24 @@ public class EdgeView extends JComponent implements Observer{
 	@Override
 	public boolean contains(int x, int y) {
 		double a, b, c;
-		int x1, x2, y1, y2; 	
-		int minX, minY;
-		x1 = model.getVertex1().getX();
-		x2 = model.getVertex2().getX();
-		y1 = model.getVertex1().getY();
-		y2 = model.getVertex2().getY();
-		minX = Math.min(x1, x2);
-		minY = Math.min(y1, y2);
 		double s, r1, r2, r;
+		int x1, x2, y1, y2, x0, y0;
+		
+		x1 = model.getVertex1().getX() + VertexView.SIZE / 2;
+		x2 = model.getVertex2().getX() + VertexView.SIZE / 2;
+		y1 = model.getVertex1().getY() + VertexView.SIZE / 2;
+		y2 = model.getVertex2().getY() + VertexView.SIZE / 2;
+		
 		a = y1 - y2; b = x2 - x1; c = x1 * y2 - x2 * y1;
-		x += minX; y += minY;
-		s = Math.abs((a * x + b * y + c) / Math.sqrt(a * a + b * b));
+		x0 = x + getX(); y0 = y + getY();
+		s = Math.abs((a * x0 + b * y0 + c) / Math.sqrt(a * a + b * b));
 		r = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow(y1 - y2, 2));
-		r1 = Math.sqrt(Math.pow((x1 - x), 2) + Math.pow(y1 - y, 2));
-		r2 = Math.sqrt(Math.pow((x2 - x), 2) + Math.pow(y2 - y, 2));
+		r1 = Math.sqrt(Math.pow((x1 - x0), 2) + Math.pow(y1 - y0, 2));
+		r2 = Math.sqrt(Math.pow((x2 - x0), 2) + Math.pow(y2 - y0, 2));
 		r1 = Math.sqrt(Math.pow(r1, 2) - Math.pow(s, 2));
 		r2 = Math.sqrt(Math.pow(r2, 2) - Math.pow(s, 2));
-		return s <= 1.25 * VertexView.SIZE  && r1 <= r && r2 <= r;
+
+		return s <= 1.25 * VertexView.BORDER_SIZE  && r1 <= r && r2 <= r;
 	}
 
 	@Override

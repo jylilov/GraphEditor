@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.GraphController;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
@@ -37,7 +38,12 @@ public class GraphEditor {
 		panel.add(button_e);
 		panel.add(button_v);
 		frame.getContentPane().add(panel, BorderLayout.WEST);
-		frame.getContentPane().add(c.getView(), BorderLayout.CENTER);
+				
+		JScrollPane scrollPane = new JScrollPane();
+		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		
+		scrollPane.setViewportView(c.getView());		
+		
 		frame.setVisible(true);
 	}
 

@@ -16,7 +16,7 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModelEvent;
 public class VertexView extends JComponent implements Observer {
 	
 	private static final long serialVersionUID = 1292220919565527946L;
-	public static final int SIZE = 75;
+	public static final int SIZE = 30;
 	public static final int BORDER_SIZE = SIZE / 6;
 	
 	private VertexModel model;
@@ -30,6 +30,10 @@ public class VertexView extends JComponent implements Observer {
 		setOpaque(false);
 		setBounds(0, 0, SIZE, SIZE);
 		setLocation(model.getX(), model.getY());
+	}
+	
+	public VertexModel getVertexModel() {
+		return model;
 	}
 	
 	public void setColor(Color color) {
