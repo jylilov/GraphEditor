@@ -11,29 +11,18 @@ import javax.swing.JScrollPane;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.GraphController;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphEditorView;
 
 public class GraphEditor {
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("GraphEditor");
+		GraphEditorView ge = new GraphEditorView(null);
+	/*	JFrame frame = new JFrame("GraphEditor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(250, 100, 800, 600);
 		GraphModel m = new GraphModel();
 		final GraphController c = new GraphController(m);
-		JButton button_v = new JButton("Vertex");
-		button_v.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				c.setVertexEditMode();
-			}
-		});
-		JButton button_e = new JButton("Edge");
-		button_e.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				c.setEdgeEditMode();
-			}
-		});
+
 		JPanel panel = new JPanel();
 		panel.add(button_e);
 		panel.add(button_v);
@@ -44,7 +33,7 @@ public class GraphEditor {
 		
 		scrollPane.setViewportView(c.getView());		
 		
-		frame.setVisible(true);
+		frame.setVisible(true);*/
 	}
 
 }
