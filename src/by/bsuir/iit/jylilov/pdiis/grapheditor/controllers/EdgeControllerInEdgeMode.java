@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
 
-public class EdgeControllerInEdgeMode implements ControllerInterface {
+class EdgeControllerInEdgeMode implements ControllerInterface {
 	
 	GraphController graphController;
 

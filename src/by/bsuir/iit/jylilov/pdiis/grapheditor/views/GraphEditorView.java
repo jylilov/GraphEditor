@@ -4,12 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -25,6 +23,7 @@ public class GraphEditorView extends JFrame {
 	private GraphEditorController controller;
 	
 	public GraphEditorView(GraphEditorController controller) {
+		super("Graph Editor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.controller = controller;
 		
@@ -32,7 +31,9 @@ public class GraphEditorView extends JFrame {
 		setJMenuBar(menuBar);
 		
 		String [] menus = {"File", "Edit", "Help"};
-		String [][] menuItems = {{"New", "Open...", "", "Close", "Close all", "", "Save", "Save as...", "", "Exit"}, {}, {"About"}}; 	
+		String [][] menuItems = {{"New", "Open...", "", "Close", "Close all", "", "Save", "Save as...", "", "Exit"}, 
+								 {"Select vertex edit mode", "Select edge edit mode", "", "Change identifier", "Change weight of vertex", "", "Delete selected"},
+								 {"About"}}; 	
 		
 		for (int i = 0; i < menus.length; i++) {
 			JMenu menu = new JMenu(menus[i]);

@@ -94,7 +94,6 @@ public class EdgeView extends JComponent implements Observer{
 				setBounds();
 			}
 		}
-		repaint();
 	}
 
 }

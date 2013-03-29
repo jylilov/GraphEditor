@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class GraphControllerInVertexMode implements ControllerInterface {
+class GraphControllerInVertexMode implements ControllerInterface {
 	
 	GraphController graphController;
 

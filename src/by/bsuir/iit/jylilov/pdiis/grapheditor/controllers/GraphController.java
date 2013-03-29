@@ -24,10 +24,18 @@ public class GraphController implements ControllerInterface {
 	private GraphModel model;
 	private GraphView view;
 	private EditMode mode = EditMode.VERTEX_MODE;
+	private ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
+	private ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
+	private VertexController vertexController = new VertexController(this);
+	private EdgeController edgeController = new EdgeController(this);
+
 	private boolean isCreatingEdge = false;
 	private VertexModel hiddenVertex;
 	private EdgeView edgeToCreate;
-
+	
+	private List<VertexView> selectedVertices = new ArrayList<VertexView> ();
+	private EdgeView selectedEdge;
+	
 	private Observer observerForChangePrefferedSize = new Observer() {
 		int maxX = 0, maxY = 0;
 
@@ -50,46 +58,38 @@ public class GraphController implements ControllerInterface {
 				view.setPreferredSize(new Dimension(maxX + VertexView.SIZE * 2, maxY + VertexView.SIZE * 2));
 				view.revalidate();
 			}
-		}
-		
+		}		
 	};
 
-	public EdgeView getEdgeToCreate() {
+	EdgeView getEdgeToCreate() {
 		return edgeToCreate;
 	}
 	
-	public GraphModel getModel() {
+	GraphModel getModel() {
 		return model;
 	}
 
-	public void setEdgeToCreate(EdgeView edgeToCreate) {
+	void setEdgeToCreate(EdgeView edgeToCreate) {
 		this.edgeToCreate = edgeToCreate;
 	}
 
-	public VertexModel getHiddenVertex() {
+	VertexModel getHiddenVertex() {
 		return hiddenVertex;
 	}
 
-	public void setHiddenVertex(VertexModel creatingVertex) {
+	void setHiddenVertex(VertexModel creatingVertex) {
 		this.hiddenVertex = creatingVertex;
 	}
-
-	private List<VertexView> selectedVertices = new ArrayList<VertexView> ();
-	private EdgeView selectedEdge;
-	private VertexController vertexController = new VertexController(this);
-	private EdgeController edgeController = new EdgeController(this);
-	private ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
-	private ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
 	
 	public EditMode getMode() {
 		return mode;
 	}
 	
-	public boolean isCreatingEdge() {
+	boolean isCreatingEdge() {
 		return isCreatingEdge;
 	}
 
-	public void setCreatingEdge(boolean isCreatingEdge) {
+	void setCreatingEdge(boolean isCreatingEdge) {
 		this.isCreatingEdge = isCreatingEdge;
 	}
 	
@@ -239,4 +239,5 @@ public class GraphController implements ControllerInterface {
 	public void mouseMoved(MouseEvent e) {
 		getCurrentController().mouseMoved(e);
 	}
+	
 }

@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class VertexControllerInVertexMode implements ControllerInterface {
+class VertexControllerInVertexMode implements ControllerInterface {
 	
 	private int dx, dy;
 	private GraphController graphController;
@@ -21,25 +21,18 @@ public class VertexControllerInVertexMode implements ControllerInterface {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -61,8 +54,6 @@ public class VertexControllerInVertexMode implements ControllerInterface {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

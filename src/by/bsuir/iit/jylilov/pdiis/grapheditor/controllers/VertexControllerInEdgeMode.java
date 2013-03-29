@@ -6,9 +6,7 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class VertexControllerInEdgeMode implements ControllerInterface {
-	
-	private EdgeView edge;
+class VertexControllerInEdgeMode implements ControllerInterface {
 	
 	GraphController graphController;
 
@@ -18,8 +16,6 @@ public class VertexControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -29,7 +25,6 @@ public class VertexControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
 	}
 
 	@Override
@@ -38,8 +33,6 @@ public class VertexControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -67,8 +60,6 @@ public class VertexControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

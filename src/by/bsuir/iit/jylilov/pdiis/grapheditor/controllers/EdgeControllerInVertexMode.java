@@ -2,7 +2,7 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.event.MouseEvent;
 
-public class EdgeControllerInVertexMode implements ControllerInterface {
+class EdgeControllerInVertexMode implements ControllerInterface {
 	
 	GraphController graphController;
 

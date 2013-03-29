@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class GraphControllerInEdgeMode implements ControllerInterface {
+class GraphControllerInEdgeMode implements ControllerInterface {
 	
 	GraphController graphController;
 

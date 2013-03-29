@@ -17,7 +17,7 @@ public class VertexView extends JComponent implements Observer {
 	
 	private static final long serialVersionUID = 1292220919565527946L;
 	public static final int SIZE = 30;
-	public static final int BORDER_SIZE = SIZE / 6;
+	public static final int BORDER_SIZE = SIZE / 5;
 	
 	private VertexModel model;
 	private Color color = Color.WHITE;
