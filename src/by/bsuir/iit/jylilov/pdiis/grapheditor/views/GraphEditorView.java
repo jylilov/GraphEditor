@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -59,6 +60,16 @@ public class GraphEditorView extends JFrame {
 		JScrollPane pane = new JScrollPane(c.getView());
 		tabbedPane.add("Tab 1", pane);
 		
+		final JButton deleteEdgeBtn = new JButton("Delete selected edge");
+		deleteEdgeBtn.setFocusable(false);
+		deleteEdgeBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.removeSelectedEdge();
+			}
+		});
+		
 		final JToggleButton button_v = new JToggleButton("Vertex Edit Mode");
 		final JToggleButton button_e = new JToggleButton("Edge Edit Mode");
 		button_v.setSelected(true);
@@ -85,6 +96,8 @@ public class GraphEditorView extends JFrame {
 		
 		toolBar.add(button_v);
 		toolBar.add(button_e);
+		toolBar.addSeparator();
+		toolBar.add(deleteEdgeBtn);
 		
 		pack();
 		setVisible(true);

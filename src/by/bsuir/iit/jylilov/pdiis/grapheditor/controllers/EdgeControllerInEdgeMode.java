@@ -2,13 +2,13 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.event.MouseEvent;
 
-import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
-
 class EdgeControllerInEdgeMode implements ControllerInterface {
 	
 	GraphController graphController;
+	EdgeController controller;
 
-	public EdgeControllerInEdgeMode(GraphController graphController) {
+	public EdgeControllerInEdgeMode(EdgeController controller, GraphController graphController) {
+		this.controller = controller;
 		this.graphController = graphController;
 	}
 
@@ -18,7 +18,6 @@ class EdgeControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		graphController.mouseMoved(e);
 	}
 
 	@Override
@@ -35,9 +34,15 @@ class EdgeControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		graphController.deselectAll();
-		if (e.getButton() == MouseEvent.BUTTON1)
-			graphController.select((EdgeView)e.getComponent());
+			switch(e.getButton()) {
+			case MouseEvent.BUTTON1:
+				graphController.deselectAll();
+				graphController.select(controller.getView());
+				break;
+			case MouseEvent.BUTTON3:
+				graphController.deselectAll();
+				break;
+			}
 	}
 
 	@Override

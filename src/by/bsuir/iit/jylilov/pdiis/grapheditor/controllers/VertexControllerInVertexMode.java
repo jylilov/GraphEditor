@@ -8,15 +8,16 @@ class VertexControllerInVertexMode implements ControllerInterface {
 	
 	private int dx, dy;
 	private GraphController graphController;
+	private VertexController controller;
 
-	public VertexControllerInVertexMode(GraphController graphController) {
+	public VertexControllerInVertexMode(VertexController controller, GraphController graphController) {
+		this.controller = controller;
 		this.graphController = graphController;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (graphController.isSelected((VertexView)e.getComponent()))
-				graphController.moveSelected(e.getX() - dx, e.getY() - dy);
+		graphController.moveSelected(e.getX() - dx, e.getY() - dy);
 	}
 
 	@Override
@@ -37,18 +38,22 @@ class VertexControllerInVertexMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		VertexView vertex = (VertexView)e.getComponent();
-		if (e.getButton() == MouseEvent.BUTTON1) {
+		VertexView vertex = controller.getView();
+		switch(e.getButton()) {
+		case MouseEvent.BUTTON1:
 			dx = e.getX();
 			dy = e.getY();
-			if (!e.isControlDown() && !graphController.isSelected(vertex)) graphController.deselectAll();
-			graphController.select(vertex);
-		} 
-		else if (e.getButton() == MouseEvent.BUTTON3) {
+			if (e.isControlDown()) 
+				graphController.addToSelection(vertex);
+			else
+				graphController.select(vertex);
+			break;
+		case MouseEvent.BUTTON3:
 			if (e.isControlDown())
 				graphController.deselect(vertex);
 			else
 				graphController.deselectAll();
+			break;
 		}
 	}
 

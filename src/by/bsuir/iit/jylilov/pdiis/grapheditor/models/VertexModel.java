@@ -1,5 +1,6 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
+import java.awt.Point;
 import java.util.Observable;
 
 public class VertexModel extends Observable {
@@ -35,6 +36,14 @@ public class VertexModel extends Observable {
 	
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	public Point getLocation() {
+		return new Point(x, y);
+	}
+	
+	public boolean isEqual(VertexModel vertex) {
+		return vertex.x == this.x && vertex.y == this.y;
 	}
 	
 }

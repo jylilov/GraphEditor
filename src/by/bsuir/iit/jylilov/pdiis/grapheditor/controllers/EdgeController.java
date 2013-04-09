@@ -2,12 +2,38 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.event.MouseEvent;
 
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
+
 public class EdgeController implements ControllerInterface {
 	
-	GraphController graphController;
-	ControllerInterface controllerInEdgeMode;
-	ControllerInterface controllerInVertexMode;
+	private GraphController graphController;
+	private ControllerInterface controllerInEdgeMode;
+	private ControllerInterface controllerInVertexMode;
 	
+	private EdgeModel model;
+	private EdgeView view;
+	
+	public EdgeController(EdgeModel model, GraphController graphController) {
+		this.model = model;
+		view = new EdgeView(model);
+		
+		view.addMouseListener(this);
+		view.addMouseMotionListener(this);
+		
+		this.graphController = graphController;
+		controllerInEdgeMode = new EdgeControllerInEdgeMode(this, graphController);
+		controllerInVertexMode = new EdgeControllerInVertexMode(this, graphController);
+	}
+	
+	public EdgeView getView() {
+		return view;
+	}
+	
+	public EdgeModel getModel() {
+		return model;
+	}
+
 	private ControllerInterface getCurrentController() {
 		switch(graphController.getMode()) {
 		case EDGE_MODE:
@@ -17,12 +43,6 @@ public class EdgeController implements ControllerInterface {
 		default:
 			return null;
 		}
-	}
-
-	public EdgeController(GraphController graphController) {
-		this.graphController = graphController;
-		controllerInEdgeMode = new EdgeControllerInEdgeMode(graphController);
-		controllerInVertexMode = new EdgeControllerInVertexMode(graphController);
 	}
 
 	@Override

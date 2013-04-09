@@ -21,12 +21,15 @@ public class EdgeView extends JComponent implements Observer{
 	private EdgeModel model;
 	private Color color = Color.BLACK;
 	
-	public EdgeView(VertexModel v1, VertexModel v2) {
+	public EdgeView(EdgeModel model) {
 		setOpaque(false);
-		model = new EdgeModel(v1, v2);
+		this.model = model;
 		model.addObserver(this);
-		
 		setBounds();
+	}
+	
+	public EdgeView(VertexModel v1, VertexModel v2) {
+		this(new EdgeModel(v1, v2));
 	}
 	
 	public EdgeModel getModel() {

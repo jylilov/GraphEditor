@@ -1,10 +1,6 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
-import java.awt.Component;
 import java.awt.event.MouseEvent;
-
-import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphView;
-import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
 class GraphControllerInEdgeMode implements ControllerInterface {
 	
@@ -20,16 +16,6 @@ class GraphControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (graphController.isCreatingEdge()) {
-			int x = e.getX() - VertexView.SIZE / 2;
-			int y = e.getY() - VertexView.SIZE / 2;
-			Component component = e.getComponent();
-			if (!(component instanceof GraphView)) {
-				x += component.getX();
-				y += component.getY();
-			}
-			graphController.getHiddenVertex().setLocation(x, y);
-		}
 	}
 
 	@Override
@@ -46,7 +32,8 @@ class GraphControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		graphController.deselectAll();
+		if (e.getButton() == MouseEvent.BUTTON3)
+			graphController.deselectAll();
 	}
 
 	@Override

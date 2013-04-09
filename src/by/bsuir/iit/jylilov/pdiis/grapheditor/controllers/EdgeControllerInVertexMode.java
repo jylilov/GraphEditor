@@ -5,8 +5,10 @@ import java.awt.event.MouseEvent;
 class EdgeControllerInVertexMode implements ControllerInterface {
 	
 	GraphController graphController;
+	EdgeController controller;
 
-	public EdgeControllerInVertexMode(GraphController graphController) {
+	public EdgeControllerInVertexMode(EdgeController controller, GraphController graphController) {
+		this.controller = controller;
 		this.graphController = graphController;
 	}
 
@@ -32,7 +34,8 @@ class EdgeControllerInVertexMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		graphController.deselectAll();
+		if (e.getButton() == MouseEvent.BUTTON3)
+			graphController.deselectAll();
 	}
 
 	@Override

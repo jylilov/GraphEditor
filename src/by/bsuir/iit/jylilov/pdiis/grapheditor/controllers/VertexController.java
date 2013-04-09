@@ -2,16 +2,36 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.event.MouseEvent;
 
+import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
+
 class VertexController implements ControllerInterface{
 	
 	private ControllerInterface controllerInVertexMode;
 	private ControllerInterface controllerInEdgeMode;
 	private GraphController graphController;
+	
+	private VertexModel model;
+	private VertexView view;
 
-	public VertexController(GraphController graphController) {
+	public VertexController(VertexModel model, GraphController graphController) {
+		this.model = model;
 		this.graphController = graphController;
-		controllerInVertexMode = new VertexControllerInVertexMode(graphController);
-		controllerInEdgeMode = new VertexControllerInEdgeMode(graphController);
+		
+		view = new VertexView(model);
+		view.addMouseListener(this);
+		view.addMouseMotionListener(this);
+		
+		controllerInVertexMode = new VertexControllerInVertexMode(this, graphController);
+		controllerInEdgeMode = new VertexControllerInEdgeMode(this, graphController);
+	}
+	
+	public VertexModel getModel() {
+		return model;
+	}
+	
+	public VertexView getView() {
+		return view;
 	}
 	
 	private ControllerInterface getCurrentController() {
@@ -24,6 +44,7 @@ class VertexController implements ControllerInterface{
 			return null;
 		}
 	}
+	
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {

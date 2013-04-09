@@ -23,13 +23,17 @@ public class VertexView extends JComponent implements Observer {
 	private Color color = Color.WHITE;
 	private Color borderColor = Color.BLACK;
 	
-	public VertexView(int x, int y) {
-		this.model = new VertexModel(x, y);
+	public VertexView(VertexModel model) {
+		this.model = model;
 		model.addObserver(this);
 		
 		setOpaque(false);
 		setBounds(0, 0, SIZE, SIZE);
-		setLocation(model.getX(), model.getY());
+		setLocation(model.getLocation());
+	}
+	
+	public VertexView(int x, int y) {
+		this(new VertexModel(x, y));
 	}
 	
 	public VertexModel getVertexModel() {

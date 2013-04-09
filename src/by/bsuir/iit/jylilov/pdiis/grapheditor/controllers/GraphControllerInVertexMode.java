@@ -34,10 +34,18 @@ class GraphControllerInVertexMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
-			graphController.addVertex(e.getX() - VertexView.SIZE / 2, e.getY() - VertexView.SIZE / 2);
-		else
+		switch(e.getButton()) {
+		case MouseEvent.BUTTON1:
+			if (e.getClickCount() == 2) { 
+				graphController.deselectAll();
+				graphController.addVertex(e.getX() - VertexView.SIZE / 2, 
+						                  e.getY() - VertexView.SIZE / 2);
+			}
+			break;
+		case MouseEvent.BUTTON3:
 			graphController.deselectAll();
+			break;
+		}
 	}
 
 	@Override

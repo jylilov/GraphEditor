@@ -26,8 +26,21 @@ public class GraphModel extends Observable {
 	public int getVerticesCount() {
 		return vertices.size();
 	}
+	
+	public EdgeModel [] getIncidentEdges(VertexModel vertex) {
+		List<EdgeModel> incidentEdges = new ArrayList<EdgeModel> ();
+		for (EdgeModel i : edges) {
+			if (i.getVertex1() == vertex || i.getVertex2() == vertex) {
+				incidentEdges.add(i);
+			}
+		}
+		return (EdgeModel[]) incidentEdges.toArray();
+	}
+	
+	
 
-	public boolean isEdgeExist(VertexModel v1, VertexModel v2) { 
+	public boolean isEdgeExist(VertexModel v1, VertexModel v2) {
+		if (v1.isEqual(v2)) return true;
 		for (EdgeModel i : edges) {
 			if ((i.getVertex1() == v1 && i.getVertex2() == v2) || 
 				(i.getVertex1() == v2 && i.getVertex2() == v1)) {
@@ -35,5 +48,13 @@ public class GraphModel extends Observable {
 			}
 		}
 		return false;
+	}
+
+	public void removeEdge(EdgeModel edge) {
+		edges.remove(edge);		
+	}
+	
+	public void removeVertex(VertexModel vertex) {
+		vertices.remove(vertex);
 	}
 }
