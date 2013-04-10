@@ -7,7 +7,7 @@ public class VertexModel extends Observable {
 	
 	private int x;
 	private int y;
-	private String identifier = new String();
+	private String identifier = new String("");
 	
 	public VertexModel(int x, int y) {
 		setLocation(Math.max(x, 0), Math.max(y, 0));

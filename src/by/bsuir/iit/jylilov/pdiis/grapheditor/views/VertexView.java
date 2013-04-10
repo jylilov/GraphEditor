@@ -1,9 +1,12 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,13 +25,14 @@ public class VertexView extends JComponent implements Observer {
 	private VertexModel model;
 	private Color color = Color.WHITE;
 	private Color borderColor = Color.BLACK;
+	private static Font font = new Font("VertexFont", Font.PLAIN, SIZE / 2);
 	
 	public VertexView(VertexModel model) {
 		this.model = model;
 		model.addObserver(this);
-		
+	
 		setOpaque(false);
-		setBounds(0, 0, SIZE, SIZE);
+		setBounds();
 		setLocation(model.getLocation());
 	}
 	
@@ -54,6 +58,14 @@ public class VertexView extends JComponent implements Observer {
 		return model;
 	}
 	
+	public void setBounds() {
+		FontMetrics metrics = getFontMetrics(font);
+		int adv = metrics.stringWidth(model.getIdentifier());
+		int desent = metrics.getDescent();
+		Rectangle size = new Rectangle(getX(), getY(), adv + SIZE + 2, SIZE + desent + 2);
+		setBounds(size);
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -63,6 +75,23 @@ public class VertexView extends JComponent implements Observer {
         g2d.fillOval(0, 0, SIZE, SIZE);
         g2d.setColor(color);
         g2d.fillOval(BORDER_SIZE, BORDER_SIZE, SIZE - 2 * BORDER_SIZE, SIZE - 2 * BORDER_SIZE);
+          
+        g2d.setFont(font);
+        
+        if (!model.getIdentifier().equals("")) {
+	        FontMetrics metrics = getFontMetrics(font);
+			int adv = metrics.stringWidth(model.getIdentifier());
+			int hgt = metrics.getHeight();
+			int asc = metrics.getAscent();
+			g2d.setColor(Color.BLACK);
+			g2d.drawRoundRect(SIZE, SIZE - asc, adv, hgt, BORDER_SIZE, BORDER_SIZE);
+			g2d.setColor(new Color(255, 255, 255, 200));
+	        g2d.fillRoundRect(SIZE, SIZE - asc, adv, hgt, BORDER_SIZE, BORDER_SIZE);
+        }
+        
+        
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(model.getIdentifier(), SIZE, SIZE);
 	}
 	
 	@Override
@@ -84,6 +113,7 @@ public class VertexView extends JComponent implements Observer {
 		
 		switch (e) {
 		case CHANGED_IDENTIFIER:
+			setBounds();
 			repaint();
 			break;
 		case CHANGED_LOCATION:

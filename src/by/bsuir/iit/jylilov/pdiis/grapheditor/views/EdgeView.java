@@ -2,8 +2,11 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.Observable;
 import java.util.Observer;
@@ -20,6 +23,7 @@ public class EdgeView extends JComponent implements Observer{
 	
 	private EdgeModel model;
 	private Color color = Color.BLACK;
+	private static Font font = new Font("EdgeFont", Font.PLAIN, VertexView.SIZE / 2);
 	
 	public EdgeView(EdgeModel model) {
 		setOpaque(false);
@@ -47,7 +51,17 @@ public class EdgeView extends JComponent implements Observer{
 		y1 = Math.min(model.getVertex1().getY(), model.getVertex2().getY());
 		x2 = Math.max(model.getVertex1().getX(), model.getVertex2().getX());
 		y2 = Math.max(model.getVertex1().getY(), model.getVertex2().getY());
-		setBounds(x1 - VertexView.SIZE, y1 - VertexView.SIZE, x2 - x1 + 2 * VertexView.SIZE, y2 - y1 + 2 * VertexView.SIZE);
+		Rectangle rec2 = new Rectangle(x1 - VertexView.SIZE, 
+									   y1 - VertexView.SIZE, 
+									   x2 - x1 + 2 * VertexView.SIZE, 
+									   y2 - y1 + 2 * VertexView.SIZE);
+		
+		FontMetrics metrics = getFontMetrics(font);
+		int adv = metrics.stringWidth(((Integer)model.getWeight()).toString());
+		int height = metrics.getHeight();
+		Rectangle rec1 = new Rectangle((x1 + x2) / 2, (y1 + y2) / 2, adv + VertexView.SIZE, height + VertexView.SIZE);
+		
+		setBounds(rec1.union(rec2));
 	}
 	
 	@Override
@@ -56,13 +70,29 @@ public class EdgeView extends JComponent implements Observer{
 		x1 = model.getVertex1().getX() - getX() + VertexView.SIZE / 2;
 		y1 = model.getVertex1().getY() - getY() + VertexView.SIZE / 2;
 		x2 = model.getVertex2().getX() - getX() + VertexView.SIZE / 2;
-		y2 = model.getVertex2().getY() - getY() + VertexView.SIZE / 2;
+		y2 = model.getVertex2().getY() - getY() + VertexView.SIZE / 2;	
 		
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setStroke(new BasicStroke(VertexView.BORDER_SIZE));
 		g2d.setColor(color);
 		g2d.drawLine(x1, y1, x2, y2);
+		
+		g2d.setStroke(new BasicStroke(1));
+		
+		FontMetrics metrics = getFontMetrics(font);
+		int adv = metrics.stringWidth(((Integer)model.getWeight()).toString());
+		int height = metrics.getHeight();
+		int asc = metrics.getAscent();
+		Rectangle rec = new Rectangle((x1 + x2) / 2, (y1 + y2) / 2, adv, height);
+		
+		g2d.setColor(Color.BLACK);
+		g2d.drawRoundRect(rec.x, rec.y, rec.width, rec.height, VertexView.BORDER_SIZE, VertexView.BORDER_SIZE);
+		g2d.setColor(new Color(255, 255, 255, 200));
+		g2d.fillRoundRect(rec.x, rec.y, rec.width, rec.height, VertexView.BORDER_SIZE, VertexView.BORDER_SIZE);
+        
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(((Integer)model.getWeight()).toString(), rec.x, rec.y + asc);
 	}
 	
 	@Override
@@ -95,6 +125,10 @@ public class EdgeView extends JComponent implements Observer{
 			switch (e) {
 			case CHANGED_LOCATION:
 				setBounds();
+				repaint();
+			case CHANGED_WEIGHT:
+				setBounds();
+				repaint();
 			}
 		}
 	}

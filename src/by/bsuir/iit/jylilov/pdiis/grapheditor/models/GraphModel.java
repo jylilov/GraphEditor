@@ -27,14 +27,14 @@ public class GraphModel extends Observable {
 		return vertices.size();
 	}
 	
-	public EdgeModel [] getIncidentEdges(VertexModel vertex) {
+	public List<EdgeModel> getIncidentEdges(VertexModel vertex) {
 		List<EdgeModel> incidentEdges = new ArrayList<EdgeModel> ();
 		for (EdgeModel i : edges) {
 			if (i.getVertex1() == vertex || i.getVertex2() == vertex) {
 				incidentEdges.add(i);
 			}
 		}
-		return (EdgeModel[]) incidentEdges.toArray();
+		return incidentEdges;
 	}
 	
 	

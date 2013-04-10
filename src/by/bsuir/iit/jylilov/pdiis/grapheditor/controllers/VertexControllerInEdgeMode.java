@@ -40,6 +40,7 @@ class VertexControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		graphController.deselectAll();
 		graphController.stopCreatingEdge();
 		VertexView vertex = controller.getView();
 		hiddenVertex = new VertexModel(e.getComponent().getX(), e.getComponent().getY());

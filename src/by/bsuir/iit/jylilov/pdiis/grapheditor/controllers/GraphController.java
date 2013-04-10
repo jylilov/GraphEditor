@@ -10,6 +10,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModel;
@@ -218,10 +219,29 @@ public class GraphController implements ControllerInterface {
 		deselectAll();
 	}
 	
+	public void removeEdge(EdgeModel edge) {
+		removeEdge(getController(edge).getView());
+	}
+	
 	public void removeEdge(EdgeView edge) {
 		view.remove(edge);
 		view.repaint();
 		model.removeEdge(edge.getModel());
+		edges.remove(getController(edge.getModel()));
+	}
+	
+	public VertexController getController(VertexModel vertex) {
+		for (VertexController i : vertices) {
+			if (i.getModel().isEqual(vertex)) return i;
+		}
+		return null;
+	}
+	
+	public EdgeController getController(EdgeModel vertex) {
+		for (EdgeController i : edges) {
+			if (i.getModel().isEqual(vertex)) return i;
+		}
+		return null;
 	}
 	
 	public void removeSelectedEdge() {
@@ -231,12 +251,50 @@ public class GraphController implements ControllerInterface {
 		}
 	}
 	
+	public void removeVertex(VertexModel vertex) {
+		removeVertex(getController(vertex).getView());
+	}
+	
 	public void removeVertex(VertexView vertex) { 
+		List<EdgeModel> incidentEdges = model.getIncidentEdges(vertex.getModel());
+		for (EdgeModel i : incidentEdges) {
+			removeEdge(i);
+		}
+		view.remove(vertex);
+		view.repaint();
+		model.removeVertex(vertex.getModel());
+		vertices.remove(getController(vertex.getModel()));
 		
 	}
 	
 	public void removeSelectedVertices() {
-		
+		for (VertexView i : selectedVertices) {
+			removeVertex(i);			
+		}
+	}
+	
+	public void changeIdentifierOfSelectedVertex() {
+		if (selectedVertices.size() == 1 ) {
+			for (VertexView i : selectedVertices) {
+				String s = JOptionPane.showInputDialog("Change identifier", i.getModel().getIdentifier());
+				if (s != null)
+					i.getModel().setIdentifier(s);
+			}
+		}
+	}
+	
+	public void changeWeightOfSelectedEdge() {
+		if (selectedEdge != null ) {
+			String s = JOptionPane.showInputDialog("Change weight", selectedEdge.getModel().getWeight());
+			if (s != null) {
+				try {
+					selectedEdge.getModel().setWeight(Integer.valueOf(s));
+				}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(this.getView(), "Eggs are not supposed to be green.");
+				}		
+			}
+		}
 	}
 	
 	private ControllerInterface getCurrentController() {

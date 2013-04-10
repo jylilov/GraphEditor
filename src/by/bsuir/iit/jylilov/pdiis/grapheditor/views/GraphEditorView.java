@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -60,14 +61,37 @@ public class GraphEditorView extends JFrame {
 		JScrollPane pane = new JScrollPane(c.getView());
 		tabbedPane.add("Tab 1", pane);
 		
-		final JButton deleteEdgeBtn = new JButton("Delete selected edge");
-		deleteEdgeBtn.setFocusable(false);
-		deleteEdgeBtn.addActionListener(new ActionListener() {
+		final JButton deleteBtn = new JButton("Delete selected");
+		deleteBtn.setFocusable(false);
+		deleteBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				c.removeSelectedEdge();
+				c.removeSelectedVertices();
 			}
+		});
+		
+		final JButton changeIdtf = new JButton("Change identifier");
+		changeIdtf.setFocusable(false);
+		changeIdtf.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.changeIdentifierOfSelectedVertex();				
+			}
+			
+		});
+		
+		final JButton changeWeight = new JButton("Change weight");
+		changeWeight.setFocusable(false);
+		changeWeight.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.changeWeightOfSelectedEdge();				
+			}
+			
 		});
 		
 		final JToggleButton button_v = new JToggleButton("Vertex Edit Mode");
@@ -97,7 +121,10 @@ public class GraphEditorView extends JFrame {
 		toolBar.add(button_v);
 		toolBar.add(button_e);
 		toolBar.addSeparator();
-		toolBar.add(deleteEdgeBtn);
+		toolBar.add(deleteBtn);		
+		toolBar.addSeparator();
+		toolBar.add(changeWeight);
+		toolBar.add(changeIdtf);
 		
 		pack();
 		setVisible(true);
