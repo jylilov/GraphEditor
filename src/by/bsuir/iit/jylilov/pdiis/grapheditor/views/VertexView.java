@@ -1,8 +1,6 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -18,19 +16,24 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModelEvent;
 
 public class VertexView extends JComponent implements Observer {
 	
-	private static final long serialVersionUID = 1292220919565527946L;
 	public static final int SIZE = 30;
 	public static final int BORDER_SIZE = SIZE / 5;
+	public static final Color DEFAULT_COLOR = Color.BLACK;
 	
-	private VertexModel model;
-	private Color color = Color.WHITE;
-	private Color borderColor = Color.BLACK;
-	private static Font font = new Font("VertexFont", Font.PLAIN, SIZE / 2);
+	private static final long serialVersionUID = 1292220919565527946L;
+	
+	private final Inscription inscription;
+	private final int inscriptionX = SIZE - BORDER_SIZE;
+	private final int inscriptionY = inscriptionX;
+	private final VertexModel model;
+	private final Color color = Color.WHITE;
+	
+	private Color borderColor = DEFAULT_COLOR;
 	
 	public VertexView(VertexModel model) {
 		this.model = model;
-		model.addObserver(this);
-	
+		inscription = new Inscription(model.getIdentifier(), this);
+		model.addObserver(this);	
 		setOpaque(false);
 		setBounds();
 		setLocation(model.getLocation());
@@ -40,17 +43,8 @@ public class VertexView extends JComponent implements Observer {
 		this(new VertexModel(x, y));
 	}
 	
-	public VertexModel getVertexModel() {
-		return model;
-	}
-	
 	public void setColor(Color color) {
-		this.color = color;
-		repaint();
-	}
-
-	public void setBorderColor(Color color) {
-		borderColor = color;
+		this.borderColor = color;
 		repaint();
 	}
 	
@@ -58,12 +52,11 @@ public class VertexView extends JComponent implements Observer {
 		return model;
 	}
 	
-	public void setBounds() {
-		FontMetrics metrics = getFontMetrics(font);
-		int adv = metrics.stringWidth(model.getIdentifier());
-		int desent = metrics.getDescent();
-		Rectangle size = new Rectangle(getX(), getY(), adv + SIZE + 2, SIZE + desent + 2);
-		setBounds(size);
+	private void setBounds() {
+		Rectangle r1 = new Rectangle(getX(), getY(), SIZE, SIZE);
+		Rectangle r2 = inscription.getRectangle();
+		r2.setLocation(inscriptionX + getX(), inscriptionY + getY());
+		setBounds(r1.union(r2));
 	}
 	
 	@Override
@@ -75,23 +68,8 @@ public class VertexView extends JComponent implements Observer {
         g2d.fillOval(0, 0, SIZE, SIZE);
         g2d.setColor(color);
         g2d.fillOval(BORDER_SIZE, BORDER_SIZE, SIZE - 2 * BORDER_SIZE, SIZE - 2 * BORDER_SIZE);
-          
-        g2d.setFont(font);
         
-        if (!model.getIdentifier().equals("")) {
-	        FontMetrics metrics = getFontMetrics(font);
-			int adv = metrics.stringWidth(model.getIdentifier());
-			int hgt = metrics.getHeight();
-			int asc = metrics.getAscent();
-			g2d.setColor(Color.BLACK);
-			g2d.drawRoundRect(SIZE, SIZE - asc, adv, hgt, BORDER_SIZE, BORDER_SIZE);
-			g2d.setColor(new Color(255, 255, 255, 200));
-	        g2d.fillRoundRect(SIZE, SIZE - asc, adv, hgt, BORDER_SIZE, BORDER_SIZE);
-        }
-        
-        
-        g2d.setColor(Color.BLACK);
-        g2d.drawString(model.getIdentifier(), SIZE, SIZE);
+        inscription.paint(g2d, inscriptionX, inscriptionY);
 	}
 	
 	@Override
@@ -106,19 +84,18 @@ public class VertexView extends JComponent implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if(!(arg instanceof VertexModelEvent)){
-			return;
-		}
-		VertexModelEvent e = (VertexModelEvent)arg;
-		
-		switch (e) {
-		case CHANGED_IDENTIFIER:
-			setBounds();
-			repaint();
-			break;
-		case CHANGED_LOCATION:
-			setLocation(model.getX(), model.getY());
-			break;
+		if(arg instanceof VertexModelEvent) {
+			VertexModelEvent e = (VertexModelEvent)arg;
+			switch (e) {
+			case CHANGED_IDENTIFIER:
+				inscription.setText(model.getIdentifier());
+				setBounds();
+				repaint();
+				break;
+			case CHANGED_LOCATION:
+				setLocation(model.getX(), model.getY());
+				break;
+			}
 		}
 	}
 	

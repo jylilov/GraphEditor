@@ -7,8 +7,8 @@ import java.util.Observable;
 
 public class GraphModel extends Observable {
 
-	List<VertexModel> vertices;
-	List<EdgeModel> edges;
+	private final List<VertexModel> vertices;
+	private final List<EdgeModel> edges;
 
 	public GraphModel() {
 		vertices = new ArrayList<VertexModel> ();
@@ -37,10 +37,8 @@ public class GraphModel extends Observable {
 		return incidentEdges;
 	}
 	
-	
-
 	public boolean isEdgeExist(VertexModel v1, VertexModel v2) {
-		if (v1.isEqual(v2)) return true;
+		if (v1.equals(v2)) return true;
 		for (EdgeModel i : edges) {
 			if ((i.getVertex1() == v1 && i.getVertex2() == v2) || 
 				(i.getVertex1() == v2 && i.getVertex2() == v1)) {

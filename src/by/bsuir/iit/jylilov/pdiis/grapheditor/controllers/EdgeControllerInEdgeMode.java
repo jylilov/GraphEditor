@@ -4,8 +4,8 @@ import java.awt.event.MouseEvent;
 
 class EdgeControllerInEdgeMode implements ControllerInterface {
 	
-	GraphController graphController;
-	EdgeController controller;
+	private final GraphController graphController;
+	private final EdgeController controller;
 
 	public EdgeControllerInEdgeMode(EdgeController controller, GraphController graphController) {
 		this.controller = controller;
@@ -36,11 +36,12 @@ class EdgeControllerInEdgeMode implements ControllerInterface {
 	public void mousePressed(MouseEvent e) {
 			switch(e.getButton()) {
 			case MouseEvent.BUTTON1:
-				graphController.deselectAll();
 				graphController.select(controller.getView());
 				break;
 			case MouseEvent.BUTTON3:
 				graphController.deselectAll();
+				break;
+			default:
 				break;
 			}
 	}

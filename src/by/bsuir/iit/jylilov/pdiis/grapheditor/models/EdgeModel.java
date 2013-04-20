@@ -5,8 +5,9 @@ import java.util.Observer;
 
 public class EdgeModel extends Observable implements Observer{
 	
-	private VertexModel vertex1;
-	private VertexModel vertex2;
+	private final VertexModel vertex1;
+	private final VertexModel vertex2;
+	
 	private int weight = 0;
 	
 	public EdgeModel(VertexModel v1, VertexModel v2) { 
@@ -41,9 +42,9 @@ public class EdgeModel extends Observable implements Observer{
 		notifyObservers((e == VertexModelEvent.CHANGED_LOCATION) ? EdgeModelEvent.CHANGED_LOCATION : null);
 	}
 
-	public boolean isEqual(EdgeModel edge) {
-		if (vertex1.isEqual(edge.getVertex1()) && vertex2.isEqual(edge.getVertex2())) return true;
-		if (vertex1.isEqual(edge.getVertex2()) && vertex2.isEqual(edge.getVertex1())) return true;
+	public boolean equals(EdgeModel edge) {
+		if (vertex1.equals(edge.getVertex1()) && vertex2.equals(edge.getVertex2())) return true;
+		if (vertex1.equals(edge.getVertex2()) && vertex2.equals(edge.getVertex1())) return true;
 		return false;
 	}
 	

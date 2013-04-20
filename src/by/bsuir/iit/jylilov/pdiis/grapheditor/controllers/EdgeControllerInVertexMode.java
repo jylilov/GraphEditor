@@ -4,8 +4,8 @@ import java.awt.event.MouseEvent;
 
 class EdgeControllerInVertexMode implements ControllerInterface {
 	
-	GraphController graphController;
-	EdgeController controller;
+	private final GraphController graphController;
+	private final EdgeController controller;
 
 	public EdgeControllerInVertexMode(EdgeController controller, GraphController graphController) {
 		this.controller = controller;

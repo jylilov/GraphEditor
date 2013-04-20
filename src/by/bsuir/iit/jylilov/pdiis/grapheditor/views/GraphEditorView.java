@@ -9,20 +9,22 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
+import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.EditMode;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.GraphController;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.GraphEditorController;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
+import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.Algorithm;
 
 public class GraphEditorView extends JFrame {
 
 	private static final long serialVersionUID = -6765308008073278915L;
-	private GraphEditorController controller;
+	
+	private final GraphEditorController controller;
 	
 	public GraphEditorView(GraphEditorController controller) {
 		super("Graph Editor");
@@ -83,6 +85,29 @@ public class GraphEditorView extends JFrame {
 			
 		});
 		
+		final JButton make = new JButton("makeAlgorithm");
+		make.setFocusable(false);
+		make.addActionListener(new ActionListener() {
+			
+			Algorithm algo = null;
+			EditMode mode;
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					if (algo == null) {
+						mode = c.getMode();
+						c.setMode(EditMode.NONE_MODE);
+						algo = new Algorithm(c);
+						algo.start();
+					} else {
+						c.setMode(mode);
+						algo.finish();
+						algo = null;
+					}
+			}
+			
+		});
+		
 		final JButton changeWeight = new JButton("Change weight");
 		changeWeight.setFocusable(false);
 		changeWeight.addActionListener(new ActionListener() {
@@ -102,7 +127,7 @@ public class GraphEditorView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				button_v.setSelected(true);
 				button_e.setSelected(false);
-				c.setVertexEditMode();
+				c.setMode(EditMode.VERTEX_MODE);
 			}
 		});
 		
@@ -111,7 +136,7 @@ public class GraphEditorView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				button_e.setSelected(true);
 				button_v.setSelected(false);
-				c.setEdgeEditMode();
+				c.setMode(EditMode.EDGE_MODE);
 			}
 		});
 		
@@ -125,6 +150,8 @@ public class GraphEditorView extends JFrame {
 		toolBar.addSeparator();
 		toolBar.add(changeWeight);
 		toolBar.add(changeIdtf);
+		toolBar.addSeparator();
+		toolBar.add(make);
 		
 		pack();
 		setVisible(true);

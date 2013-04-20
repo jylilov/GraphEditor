@@ -42,7 +42,7 @@ public class VertexModel extends Observable {
 		return new Point(x, y);
 	}
 	
-	public boolean isEqual(VertexModel vertex) {
+	public boolean equals(VertexModel vertex) {
 		return vertex.x == this.x && vertex.y == this.y;
 	}
 	

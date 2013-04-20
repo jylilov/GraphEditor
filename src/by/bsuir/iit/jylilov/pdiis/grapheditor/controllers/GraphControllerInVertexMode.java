@@ -6,7 +6,7 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
 class GraphControllerInVertexMode implements ControllerInterface {
 	
-	GraphController graphController;
+	private final GraphController graphController;
 
 	public GraphControllerInVertexMode(GraphController graphController) {
 		this.graphController = graphController;
@@ -37,9 +37,10 @@ class GraphControllerInVertexMode implements ControllerInterface {
 		switch(e.getButton()) {
 		case MouseEvent.BUTTON1:
 			if (e.getClickCount() == 2) { 
-				graphController.deselectAll();
 				graphController.addVertex(e.getX() - VertexView.SIZE / 2, 
 						                  e.getY() - VertexView.SIZE / 2);
+			} else {
+				graphController.deselectAll();
 			}
 			break;
 		case MouseEvent.BUTTON3:

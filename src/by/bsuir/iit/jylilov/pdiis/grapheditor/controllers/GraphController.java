@@ -2,7 +2,6 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 
+
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
@@ -21,37 +21,34 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.GraphView;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
-public class GraphController implements ControllerInterface {
+public class GraphController extends Controller {
 
-	private GraphModel model;
-	private GraphView view;
+	private final ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
+	private final ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
+	private final List<VertexController> vertices = new ArrayList<VertexController> ();
+	private final List<EdgeController> edges = new ArrayList<EdgeController> ();
+	private final List<VertexView> selectedVertices = new ArrayList<VertexView> ();
+	private final GraphModel model;
+	private final GraphView view;
+	
 	private EditMode mode = EditMode.VERTEX_MODE;
-	private ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
-	private ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
-
 	private boolean isCreatingEdge = false;
 	private EdgeView edgeToCreate;
-	
-	private List<VertexController> vertices = new ArrayList<VertexController> ();
-	private List<EdgeController> edges = new ArrayList<EdgeController> ();
-	private List<VertexView> selectedVertices = new ArrayList<VertexView> ();
 	private EdgeView selectedEdge;
 	
 	private Observer observerForChangePrefferedSize = new Observer() {
+		
 		int maxX = 0, maxY = 0;
-
+		
 		@Override
 		public void update(Observable arg0, Object arg1) {
 			VertexModelEvent e = (VertexModelEvent)arg1;
 			VertexModel model = (VertexModel)arg0;
 			boolean isChanged = false;
 			if (e == VertexModelEvent.CHANGED_LOCATION) {
-				if (maxX < model.getX()) {
-					maxX = model.getX();
-					isChanged = true;
-				}
-				if (maxY < model.getY()) {
-					maxY = model.getY();
+				if (maxX < model.getX() || maxY < model.getY()) {
+					maxX = Math.max(maxX, model.getX());
+					maxY = Math.max(maxY, model.getY());					
 					isChanged = true;
 				}
 			}
@@ -60,6 +57,7 @@ public class GraphController implements ControllerInterface {
 				view.revalidate();
 			}
 		}		
+		
 	};
 
 	public GraphController(GraphModel model) {
@@ -86,15 +84,42 @@ public class GraphController implements ControllerInterface {
 	}
 
 	public void addVertex(VertexModel vertexModel) {
-		VertexController vertex = new VertexController(vertexModel, this);
-		addVertex(vertex);
+		addVertex(new VertexController(vertexModel, this));
 	}
 
 	public void addVertex(int x, int y) {
-		VertexModel model = new VertexModel(x, y);
-		addVertex(model);
+		addVertex(new VertexModel(x, y));
 	}
 	
+	VertexController getController(VertexModel vertex) {
+		for (VertexController i : vertices) {
+			if (i.getModel().equals(vertex)) return i;
+		}
+		return null;
+	}
+
+	public void removeVertex(VertexModel vertex) {
+		removeVertex(getController(vertex).getView());
+	}
+
+	public void removeVertex(VertexView vertex) { 
+		List<EdgeModel> incidentEdges = model.getIncidentEdges(vertex.getModel());
+		for (EdgeModel i : incidentEdges) {
+			removeEdge(i);
+		}
+		view.remove(vertex);
+		view.repaint();
+		model.removeVertex(vertex.getModel());
+		vertices.remove(getController(vertex.getModel()));
+		
+	}
+
+	public void removeSelectedVertices() {
+		for (VertexView i : selectedVertices) {
+			removeVertex(i);			
+		}
+	}
+
 	public void addEdge(VertexModel v1, VertexModel v2) {
 		if (!model.isEdgeExist(v1, v2)) {
 			EdgeModel edge = new EdgeModel(v1, v2);
@@ -103,6 +128,42 @@ public class GraphController implements ControllerInterface {
 			edges.add(edgeController);
 			view.add(edgeController.getView());
 			view.repaint();
+		}
+	}
+
+	EdgeController getController(EdgeModel edge) {
+		for (EdgeController i : edges) {
+			if (i.getModel().equals(edge)) return i;
+		}
+		return null;
+	}
+	
+	EdgeController getController(VertexController vertex1, VertexController vertex2) {
+		VertexModel v1 = vertex1.getModel();
+		VertexModel v2 = vertex2.getModel();
+		for (EdgeController i: edges) {
+			if ((i.getModel().getVertex1().equals(v1) && i.getModel().getVertex2().equals(v2)) ||
+				(i.getModel().getVertex1().equals(v2) && i.getModel().getVertex2().equals(v1)))
+				return i;
+		}
+		return null;
+	}
+
+	public void removeEdge(EdgeModel edge) {
+		removeEdge(getController(edge).getView());
+	}
+
+	public void removeEdge(EdgeView edge) {
+		view.remove(edge);
+		view.repaint();
+		model.removeEdge(edge.getModel());
+		edges.remove(getController(edge.getModel()));
+	}
+
+	public void removeSelectedEdge() {
+		if (selectedEdge != null) {
+			removeEdge(selectedEdge);
+			selectedEdge = null;
 		}
 	}
 
@@ -132,13 +193,13 @@ public class GraphController implements ControllerInterface {
 		}	
 		stopCreatingEdge();
 	}
-
-	public EditMode getMode() {
-		return mode;
-	}
 	
 	boolean isCreatingEdge() {
 		return isCreatingEdge;
+	}
+
+	public EditMode getMode() {
+		return mode;
 	}
 	
 	public void moveSelected(int x, int y) {
@@ -164,12 +225,13 @@ public class GraphController implements ControllerInterface {
 	public void addToSelection(VertexView vertex) {
 		if (!isSelected(vertex)) {
 			selectedVertices.add(vertex);
-			vertex.setBorderColor(Color.BLUE);
+			vertex.setColor(Color.BLUE);
 			view.setComponentZOrder(vertex, 0);
 		}
 	}
 	
 	public void select(EdgeView edge) {
+		deselectEdge();
 		selectedEdge = edge;
 		edge.setColor(Color.BLUE);
 		view.setComponentZOrder(edge, model.getVerticesCount());
@@ -188,7 +250,7 @@ public class GraphController implements ControllerInterface {
 	
 	public void deselect(VertexView vertex) {
 		if (isSelected(vertex)) {
-			vertex.setBorderColor(Color.BLACK);
+			vertex.setColor(Color.BLACK);
 			Iterator<VertexView> i = selectedVertices.iterator();
 			while (vertex != i.next()) {}
 			i.remove();
@@ -203,74 +265,10 @@ public class GraphController implements ControllerInterface {
 			isCreatingEdge = false;
 		}
 		for (VertexView i : selectedVertices) {
-			i.setBorderColor(Color.BLACK);
+			i.setColor(Color.BLACK);
 		}
 		selectedVertices.clear();
 		deselectEdge();
-	}
-	
-	public void setVertexEditMode() {
-		mode = EditMode.VERTEX_MODE;
-		deselectAll();
-	}
-	
-	public void setEdgeEditMode() {
-		mode = EditMode.EDGE_MODE;
-		deselectAll();
-	}
-	
-	public void removeEdge(EdgeModel edge) {
-		removeEdge(getController(edge).getView());
-	}
-	
-	public void removeEdge(EdgeView edge) {
-		view.remove(edge);
-		view.repaint();
-		model.removeEdge(edge.getModel());
-		edges.remove(getController(edge.getModel()));
-	}
-	
-	public VertexController getController(VertexModel vertex) {
-		for (VertexController i : vertices) {
-			if (i.getModel().isEqual(vertex)) return i;
-		}
-		return null;
-	}
-	
-	public EdgeController getController(EdgeModel vertex) {
-		for (EdgeController i : edges) {
-			if (i.getModel().isEqual(vertex)) return i;
-		}
-		return null;
-	}
-	
-	public void removeSelectedEdge() {
-		if (selectedEdge != null) {
-			removeEdge(selectedEdge);
-			selectedEdge = null;
-		}
-	}
-	
-	public void removeVertex(VertexModel vertex) {
-		removeVertex(getController(vertex).getView());
-	}
-	
-	public void removeVertex(VertexView vertex) { 
-		List<EdgeModel> incidentEdges = model.getIncidentEdges(vertex.getModel());
-		for (EdgeModel i : incidentEdges) {
-			removeEdge(i);
-		}
-		view.remove(vertex);
-		view.repaint();
-		model.removeVertex(vertex.getModel());
-		vertices.remove(getController(vertex.getModel()));
-		
-	}
-	
-	public void removeSelectedVertices() {
-		for (VertexView i : selectedVertices) {
-			removeVertex(i);			
-		}
 	}
 	
 	public void changeIdentifierOfSelectedVertex() {
@@ -296,8 +294,20 @@ public class GraphController implements ControllerInterface {
 			}
 		}
 	}
+
+	List<EdgeController> getIncidentEdges(VertexController vertex) {
+		List<EdgeController> e = new ArrayList<EdgeController> (); 
+		for (EdgeController i : edges) {
+			if (i.getModel().getVertex1().equals(vertex.getModel()) || 
+				i.getModel().getVertex2().equals(vertex.getModel())) {
+				e.add(i);
+			}
+		}
+		return e;
+	}
 	
-	private ControllerInterface getCurrentController() {
+	@Override
+	protected ControllerInterface getCurrentController() {
 		switch(mode) {
 		case EDGE_MODE:
 			return graphControllerInEdgeMode;
@@ -308,40 +318,17 @@ public class GraphController implements ControllerInterface {
 		}		
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		getCurrentController().mouseClicked(e);
+	List<VertexController> getVertices() {
+		return new ArrayList<VertexController>(vertices); 
+	}
+	
+	List<EdgeController> getEdges() {
+		return new ArrayList<EdgeController>(edges);
 	}
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		getCurrentController().mouseEntered(e);
+	public void setMode(EditMode mode) {
+		this.mode = mode;
+		deselectAll();
 	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		getCurrentController().mouseExited(e);
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		getCurrentController().mousePressed(e);
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		getCurrentController().mouseReleased(e);
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		getCurrentController().mouseDragged(e);
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		getCurrentController().mouseMoved(e);
-	}
-
 	
 }

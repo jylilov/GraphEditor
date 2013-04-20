@@ -7,9 +7,10 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
 class VertexControllerInEdgeMode implements ControllerInterface {
 	
-	GraphController graphController;
-	VertexController controller;
-	VertexModel hiddenVertex; //for create edge
+	private final GraphController graphController;
+	private final VertexController controller;
+	
+	private VertexModel hiddenVertex; //for create edge
 
 	public VertexControllerInEdgeMode(VertexController controller, GraphController graphController) {
 		this.controller = controller;

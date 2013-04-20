@@ -2,8 +2,6 @@ package by.bsuir.iit.jylilov.pdiis.grapheditor.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -19,16 +17,21 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.VertexModel;
 
 public class EdgeView extends JComponent implements Observer{
 
-	private static final long serialVersionUID = 6159972103656262134L;
+	public static final Color DEFAULT_COLOR = Color.BLACK;
 	
-	private EdgeModel model;
-	private Color color = Color.BLACK;
-	private static Font font = new Font("EdgeFont", Font.PLAIN, VertexView.SIZE / 2);
+	private static final long serialVersionUID = 6159972103656262134L;
+	private static final int SIZE = VertexView.BORDER_SIZE;
+	
+	private final EdgeModel model;
+	private final Inscription inscription;
+	
+	private Color color = DEFAULT_COLOR;
 	
 	public EdgeView(EdgeModel model) {
 		setOpaque(false);
 		this.model = model;
 		model.addObserver(this);
+		inscription = new Inscription(((Integer)model.getWeight()).toString(), this);
 		setBounds();
 	}
 	
@@ -45,23 +48,19 @@ public class EdgeView extends JComponent implements Observer{
 		repaint();
 	}
 	
-	public void setBounds() {
+	private void setBounds() {
 		int x1, y1, x2, y2;
 		x1 = Math.min(model.getVertex1().getX(), model.getVertex2().getX());
 		y1 = Math.min(model.getVertex1().getY(), model.getVertex2().getY());
 		x2 = Math.max(model.getVertex1().getX(), model.getVertex2().getX());
 		y2 = Math.max(model.getVertex1().getY(), model.getVertex2().getY());
-		Rectangle rec2 = new Rectangle(x1 - VertexView.SIZE, 
+		Rectangle r1 = new Rectangle(x1 - VertexView.SIZE, 
 									   y1 - VertexView.SIZE, 
 									   x2 - x1 + 2 * VertexView.SIZE, 
 									   y2 - y1 + 2 * VertexView.SIZE);
-		
-		FontMetrics metrics = getFontMetrics(font);
-		int adv = metrics.stringWidth(((Integer)model.getWeight()).toString());
-		int height = metrics.getHeight();
-		Rectangle rec1 = new Rectangle((x1 + x2) / 2, (y1 + y2) / 2, adv + VertexView.SIZE, height + VertexView.SIZE);
-		
-		setBounds(rec1.union(rec2));
+		Rectangle r2 = inscription.getRectangle();
+		r2.setLocation((x1 + x2) / 2 - r2.width / 2, (y1 + y2) / 2 - r2.height / 2);
+		setBounds(r1.union(r2));
 	}
 	
 	@Override
@@ -74,25 +73,16 @@ public class EdgeView extends JComponent implements Observer{
 		
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setStroke(new BasicStroke(VertexView.BORDER_SIZE));
+		g2d.setStroke(new BasicStroke(SIZE));
 		g2d.setColor(color);
 		g2d.drawLine(x1, y1, x2, y2);
 		
 		g2d.setStroke(new BasicStroke(1));
 		
-		FontMetrics metrics = getFontMetrics(font);
-		int adv = metrics.stringWidth(((Integer)model.getWeight()).toString());
-		int height = metrics.getHeight();
-		int asc = metrics.getAscent();
-		Rectangle rec = new Rectangle((x1 + x2) / 2, (y1 + y2) / 2, adv, height);
-		
-		g2d.setColor(Color.BLACK);
-		g2d.drawRoundRect(rec.x, rec.y, rec.width, rec.height, VertexView.BORDER_SIZE, VertexView.BORDER_SIZE);
-		g2d.setColor(new Color(255, 255, 255, 200));
-		g2d.fillRoundRect(rec.x, rec.y, rec.width, rec.height, VertexView.BORDER_SIZE, VertexView.BORDER_SIZE);
+		Rectangle r = inscription.getRectangle();
+		inscription.paint(g2d, (x1 + x2) / 2 - r.width / 2, (y1 + y2) / 2 - r.height / 2);
         
-        g2d.setColor(Color.BLACK);
-        g2d.drawString(((Integer)model.getWeight()).toString(), rec.x, rec.y + asc);
+        
 	}
 	
 	@Override
@@ -115,7 +105,7 @@ public class EdgeView extends JComponent implements Observer{
 		r1 = Math.sqrt(Math.pow(r1, 2) - Math.pow(s, 2));
 		r2 = Math.sqrt(Math.pow(r2, 2) - Math.pow(s, 2));
 
-		return s <= 1.25 * VertexView.BORDER_SIZE  && r1 <= r && r2 <= r;
+		return s <= 1.25 * SIZE  && r1 <= r && r2 <= r;
 	}
 
 	@Override
@@ -124,12 +114,13 @@ public class EdgeView extends JComponent implements Observer{
 			EdgeModelEvent e = (EdgeModelEvent)arg;
 			switch (e) {
 			case CHANGED_LOCATION:
-				setBounds();
-				repaint();
+				break;
 			case CHANGED_WEIGHT:
-				setBounds();
-				repaint();
+				inscription.setText(((Integer)model.getWeight()).toString());
+				break;					
 			}
+			setBounds();
+			repaint();
 		}
 	}
 

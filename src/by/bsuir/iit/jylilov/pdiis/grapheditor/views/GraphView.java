@@ -11,8 +11,8 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
 public class GraphView extends JPanel implements Observer {
 
 	private static final long serialVersionUID = 5915112810769913119L;
-	private GraphModel model;
-	private GraphController controller;
+	private final GraphModel model;
+	private final GraphController controller;
 	
 	public GraphView(GraphController controller, GraphModel model) {
 		super();

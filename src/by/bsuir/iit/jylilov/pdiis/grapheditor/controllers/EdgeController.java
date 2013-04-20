@@ -1,18 +1,15 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.controllers;
 
-import java.awt.event.MouseEvent;
-
 import by.bsuir.iit.jylilov.pdiis.grapheditor.models.EdgeModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.views.EdgeView;
 
-public class EdgeController implements ControllerInterface {
+class EdgeController extends Controller {
 	
-	private GraphController graphController;
-	private ControllerInterface controllerInEdgeMode;
-	private ControllerInterface controllerInVertexMode;
-	
-	private EdgeModel model;
-	private EdgeView view;
+	private final GraphController graphController;
+	private final ControllerInterface controllerInEdgeMode;
+	private final ControllerInterface controllerInVertexMode;
+	private final EdgeModel model;
+	private final EdgeView view;
 	
 	public EdgeController(EdgeModel model, GraphController graphController) {
 		this.model = model;
@@ -34,7 +31,8 @@ public class EdgeController implements ControllerInterface {
 		return model;
 	}
 
-	private ControllerInterface getCurrentController() {
+	@Override
+	protected ControllerInterface getCurrentController() {
 		switch(graphController.getMode()) {
 		case EDGE_MODE:
 			return controllerInEdgeMode;
@@ -43,41 +41,6 @@ public class EdgeController implements ControllerInterface {
 		default:
 			return null;
 		}
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		getCurrentController().mouseClicked(e);
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		getCurrentController().mouseEntered(e);
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		getCurrentController().mouseExited(e);
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		getCurrentController().mousePressed(e);
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		getCurrentController().mouseReleased(e);
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		getCurrentController().mouseDragged(e);
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		getCurrentController().mouseMoved(e);
 	}
 
 }

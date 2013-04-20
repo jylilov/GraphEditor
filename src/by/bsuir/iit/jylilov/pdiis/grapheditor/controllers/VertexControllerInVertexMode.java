@@ -6,9 +6,11 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.views.VertexView;
 
 class VertexControllerInVertexMode implements ControllerInterface {
 	
-	private int dx, dy;
-	private GraphController graphController;
-	private VertexController controller;
+	private final GraphController graphController;
+	private final VertexController controller;
+	
+	private int dx;
+	private int dy;
 
 	public VertexControllerInVertexMode(VertexController controller, GraphController graphController) {
 		this.controller = controller;

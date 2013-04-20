@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 class GraphControllerInEdgeMode implements ControllerInterface {
 	
-	GraphController graphController;
+	private final GraphController graphController;
 
 	public GraphControllerInEdgeMode(GraphController graphController) {
 		this.graphController = graphController;
@@ -32,7 +32,8 @@ class GraphControllerInEdgeMode implements ControllerInterface {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON3)
+		if (e.getButton() == MouseEvent.BUTTON3 ||
+			e.getButton() == MouseEvent.BUTTON1)
 			graphController.deselectAll();
 	}
 
