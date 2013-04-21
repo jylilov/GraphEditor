@@ -19,7 +19,6 @@ public class Algorithm extends Thread {
 	private int pauseTime = 1000;
 	private List<VertexController> vertices;
 	private int[][] matrix;
-	private boolean[] isVertexProcessed;
 	private int size;
 	
 	public Algorithm (GraphController graph) {
@@ -38,29 +37,6 @@ public class Algorithm extends Thread {
 				}
 			}
 	}
-	
-	private void travesal(int x) {
-		if (isVertexProcessed[x]) return;
-		isVertexProcessed[x] = true;
-		for (int i = 0; i < size; ++i) {
-			if (!isVertexProcessed[i] && matrix[x][i] != -1) 
-				travesal(i);
-		}
-	}
-	
-	private boolean isConected() {
-		boolean answer = true;
-		isVertexProcessed = new boolean[size];
-		travesal(0);
-		for (boolean i: isVertexProcessed) {
-			if (!i) {
-				answer = false;
-				break;
-			}
-		}
-		isVertexProcessed = null;
-		return answer;
-	}	
 	
 	public void pause() {
 		try {
@@ -95,12 +71,14 @@ public class Algorithm extends Thread {
 				select(graph.getController(vertices.get(vertex), vertices.get(selectedEdge[vertex])));
 			}
 			for (int j = 0; j < size; ++j) {
-				if (matrix[vertex][j] < minEdgeToVertex[j]) {
-					minEdgeToVertex[j] = matrix[vertex][j];
-					process(graph.getController(vertices.get(vertex), vertices.get(j)));
-					selectedEdge[j] = vertex;
-				} else if (matrix[vertex][j] != INF && !isInCarcass[j]){
-					process(graph.getController(vertices.get(vertex), vertices.get(j)));					
+				if (!isInCarcass[j]) {
+					if (matrix[vertex][j] < minEdgeToVertex[j]) {
+						minEdgeToVertex[j] = matrix[vertex][j];
+						process(graph.getController(vertices.get(vertex), vertices.get(j)));
+						selectedEdge[j] = vertex;
+					} else if (matrix[vertex][j] != INF){
+						process(graph.getController(vertices.get(vertex), vertices.get(j)));					
+					}
 				}
 			}
 			pause();
@@ -109,15 +87,7 @@ public class Algorithm extends Thread {
 	
 	@Override
 	public void run() {		
-		if (isConected()) {
-			makeAlgorithm();
-		} else {
-			for (VertexController i: graph.getVertices()) 
-				deselect(i);
-			for (EdgeController i: graph.getEdges()) 
-				deselect(i);
-		}
-			
+		makeAlgorithm();	
 	}
 	
 	public void finish() {

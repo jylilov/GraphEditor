@@ -1,9 +1,12 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
+import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
 
-public class EdgeModel extends Observable implements Observer{
+public class EdgeModel extends Observable implements Observer, Serializable{
+	
+	private static final long serialVersionUID = 2237712443253772232L;
 	
 	private final VertexModel vertex1;
 	private final VertexModel vertex2;
@@ -13,8 +16,12 @@ public class EdgeModel extends Observable implements Observer{
 	public EdgeModel(VertexModel v1, VertexModel v2) { 
 		vertex1 = v1;
 		vertex2 = v2;
-		v1.addObserver(this);
-		v2.addObserver(this);
+		addObservers();		
+	}
+	
+	private void addObservers() {	
+		vertex1.addObserver(this);
+		vertex2.addObserver(this);
 	}
 	
 	public VertexModel getVertex1() {

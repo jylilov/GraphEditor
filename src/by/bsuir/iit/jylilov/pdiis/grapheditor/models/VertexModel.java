@@ -1,9 +1,12 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.Observable;
 
-public class VertexModel extends Observable {
+public class VertexModel extends Observable implements Serializable {
+	
+	private static final long serialVersionUID = 2466949011666851093L;
 	
 	private int x;
 	private int y;

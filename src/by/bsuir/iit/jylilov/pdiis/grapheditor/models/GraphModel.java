@@ -1,12 +1,15 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 
-public class GraphModel extends Observable {
+public class GraphModel extends Observable implements Serializable {
 
+	private static final long serialVersionUID = 2034560809598304488L;
+	
 	private final List<VertexModel> vertices;
 	private final List<EdgeModel> edges;
 
@@ -54,5 +57,13 @@ public class GraphModel extends Observable {
 	
 	public void removeVertex(VertexModel vertex) {
 		vertices.remove(vertex);
+	}
+
+	public List<VertexModel> getVertices() {
+		return vertices;
+	}
+	
+	public List<EdgeModel> getEdges() {
+		return edges;
 	}
 }

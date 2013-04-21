@@ -62,7 +62,22 @@ public class GraphController extends Controller {
 
 	public GraphController(GraphModel model) {
 		this.model = model;
+		VertexController controllerV;
+		EdgeController controllerE;
 		view = new GraphView(this, model);
+		for (VertexModel i : model.getVertices()) {
+			controllerV = new VertexController(i, this);
+			vertices.add(controllerV);
+			view.add(controllerV.getView());
+			controllerV.getModel().addObserver(observerForChangePrefferedSize);
+		}
+		for (EdgeModel i : model.getEdges()) {
+			controllerE = new EdgeController(i, this);
+			edges.add(controllerE);
+			view.add(controllerE.getView());
+			i.getVertex1().addObserver(i);
+			i.getVertex2().addObserver(i);
+		}
 		view.addMouseListener(this);
 		view.addMouseMotionListener(this);
 	}
