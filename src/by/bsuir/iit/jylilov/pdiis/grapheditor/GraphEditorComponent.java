@@ -17,9 +17,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
@@ -30,6 +30,14 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.models.GraphModel;
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.Algorithm;
 
 public class GraphEditorComponent extends JFrame {
+
+	private final class AboutListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(GraphEditorComponent.this, 
+					"Author: Alexander Jylilov (alexander.jylilov@gmail.com) ");				
+		}
+	}
 
 	private static final long serialVersionUID = -6765308008073278915L;
 	
@@ -49,6 +57,9 @@ public class GraphEditorComponent extends JFrame {
 	private final JMenuItem mntSetWeight = new JMenuItem("Change weight");
 	private final JMenuItem mntDelete = new JMenuItem("Delete selected");
 	private final JMenuItem mntMakeAlgorithm = new JMenuItem("Make algorithm");
+	
+	private final JMenu mnHelp = new JMenu("Help");
+	private final JMenuItem mntAbout = new JMenuItem("About");
 	
 	private final JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
 	private final JToggleButton btnSetVMode = new JToggleButton("Vertex edit mode");
@@ -199,12 +210,20 @@ public class GraphEditorComponent extends JFrame {
 		initFileMenu();
 		initEditMenu();
 		initToolBar();
+		initHelpMenu();
 		
 		getContentPane().add(workArea, BorderLayout.CENTER);
 		workArea.setViewportView(graph.getView());
 		
 		setBounds(250, 50, 800, 600);
 		setVisible(true);
+	}
+
+	private void initHelpMenu() {
+		mnBar.add(mnHelp);
+		mnHelp.add(mntAbout);
+		
+		mntAbout.addActionListener(new AboutListener());
 	}
 
 	private void initToolBar() {
