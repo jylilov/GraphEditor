@@ -1,6 +1,7 @@
 package by.bsuir.iit.jylilov.pdiis.grapheditor;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,8 +11,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -22,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileFilter;
 
 import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.EditMode;
@@ -32,10 +38,40 @@ import by.bsuir.iit.jylilov.pdiis.grapheditor.controllers.Algorithm;
 public class GraphEditorComponent extends JFrame {
 
 	private final class AboutListener implements ActionListener {
+		
+		private final class LinkListener implements HyperlinkListener {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+					try {
+						Desktop.getDesktop().browse(new URI(e.getURL().toString()));
+					} catch (IOException | URISyntaxException e1) {
+					}
+				}
+			}
+		}
+
+		private final JEditorPane pane;
+		private final String mail = "alexander.jylilov@gmail.com";
+		private final String gitHubLink = "https://github.com/jylilov/GraphEditor";
+		
+		public AboutListener() {
+			String content;
+			content = "<html><body>"
+			+ "<br>Author: Alexander Jylilov (<a href=\"mailto:" + mail + "\">" + mail + "</a>)\n</br>"
+            + "<br>Project on GitHub: <a href=\"" + gitHubLink + "\">" + gitHubLink + "</a></br>"
+            + "</body></html>";
+			pane = new JEditorPane("text/html", content);
+			pane.setEditable(false);
+			pane.setFocusable(false);
+			pane.setBackground(GraphEditorComponent.this.getBackground());
+			pane.addHyperlinkListener(new LinkListener());
+			
+		}
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(GraphEditorComponent.this, 
-					"Author: Alexander Jylilov (alexander.jylilov@gmail.com) ");				
+			JOptionPane.showMessageDialog(GraphEditorComponent.this, pane); 				
 		}
 	}
 
