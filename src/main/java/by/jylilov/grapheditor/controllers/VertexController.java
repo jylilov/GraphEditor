@@ -2,45 +2,68 @@ package by.jylilov.grapheditor.controllers;
 
 import by.jylilov.grapheditor.models.VertexModel;
 import by.jylilov.grapheditor.views.VertexView;
+import javafx.scene.input.MouseButton;
 
-class VertexController extends Controller {
-	
-	private final ControllerInterface controllerInVertexMode;
-	private final ControllerInterface controllerInEdgeMode;
-	private final GraphController graphController;
-	private final VertexModel model;
-	private final VertexView view;
+public class VertexController {
+    private final GraphController graphController;
 
-	public VertexController(VertexModel model, GraphController graphController) {
-		this.model = model;
-		this.graphController = graphController;
-		
-		view = new VertexView(model);
-		view.addMouseListener(this);
-		view.addMouseMotionListener(this);
-		
-		controllerInVertexMode = new VertexControllerInVertexMode(this, graphController);
-		controllerInEdgeMode = new VertexControllerInEdgeMode(this, graphController);
-	}
-	
-	public VertexModel getModel() {
-		return model;
-	}
-	
-	public VertexView getView() {
-		return view;
-	}
-	
-	@Override
-	protected ControllerInterface getCurrentController() {
-		switch(graphController.getMode()) {
-		case EDGE_MODE:
-			return controllerInEdgeMode;
-		case VERTEX_MODE:
-			return controllerInVertexMode;
-		default:
-			return null;
-		}
-	}
-	
+    private final VertexView view;
+    private final VertexModel model;
+
+    public VertexController(GraphController graphController) {
+        this(graphController, new VertexModel());
+    }
+
+    public VertexController(GraphController graphController, VertexModel model) {
+        this.graphController = graphController;
+        this.model = model;
+        view = new VertexView();
+
+        view.layoutXProperty().bindBidirectional(model.xProperty());
+        view.layoutYProperty().bindBidirectional(model.yProperty());
+
+        addViewListeners();
+
+    }
+
+    private void addViewListeners() {
+        view.setOnMousePressed(event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                if (event.isShiftDown()) {
+                    event.setDragDetect(true);
+                    graphController.startEdgeCreating(model);
+                } else {
+                    if (event.isControlDown()) {
+                        graphController.addToSelection(this);
+                    } else {
+                        graphController.select(this);
+                    }
+                    graphController.startDragSelected();
+                }
+            }
+        });
+
+        view.setOnDragDetected(event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                if (event.isShiftDown()) {
+                    view.startFullDrag();
+                    event.consume();
+                }
+            }
+        });
+
+        view.setOnMouseDragReleased(event -> {
+            graphController.finishEdgeCreating(model);
+            event.consume();
+        });
+    }
+
+    public VertexView getView() {
+        return view;
+    }
+
+    public VertexModel getModel() {
+        return model;
+    }
+
 }

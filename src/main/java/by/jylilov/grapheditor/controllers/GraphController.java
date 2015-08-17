@@ -1,349 +1,243 @@
 package by.jylilov.grapheditor.controllers;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-
-
-
 import by.jylilov.grapheditor.models.EdgeModel;
 import by.jylilov.grapheditor.models.GraphModel;
 import by.jylilov.grapheditor.models.VertexModel;
-import by.jylilov.grapheditor.models.VertexModelEvent;
-import by.jylilov.grapheditor.views.EdgeView;
-import by.jylilov.grapheditor.views.GraphView;
-import by.jylilov.grapheditor.views.VertexView;
+import javafx.scene.Group;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 
-public class GraphController extends Controller {
+import java.util.ArrayList;
+import java.util.List;
 
-	private final ControllerInterface graphControllerInEdgeMode = new GraphControllerInEdgeMode(this);
-	private final ControllerInterface graphControllerInVertexMode = new GraphControllerInVertexMode(this);
-	private final List<VertexController> vertices = new ArrayList<VertexController> ();
-	private final List<EdgeController> edges = new ArrayList<EdgeController> ();
-	private final List<VertexView> selectedVertices = new ArrayList<VertexView> ();
-	private final GraphModel model;
-	private final GraphView view;
-	
-	private EditMode mode = EditMode.VERTEX_MODE;
-	private boolean isCreatingEdge = false;
-	private EdgeView edgeToCreate;
-	private EdgeView selectedEdge;
-	
-	private Observer observerForChangePrefferedSize = new Observer() {
-		
-		int maxX = 0, maxY = 0;
-		
-		@Override
-		public void update(Observable arg0, Object arg1) {
-			VertexModelEvent e = (VertexModelEvent)arg1;
-			VertexModel model = (VertexModel)arg0;
-			boolean isChanged = false;
-			if (e == VertexModelEvent.CHANGED_LOCATION) {
-				if (maxX < model.getX() || maxY < model.getY()) {
-					maxX = Math.max(maxX, model.getX());
-					maxY = Math.max(maxY, model.getY());					
-					isChanged = true;
-				}
-			}
-			if (isChanged) {
-				view.setPreferredSize(new Dimension(maxX + VertexView.SIZE * 2, maxY + VertexView.SIZE * 2));
-				view.revalidate();
-			}
-		}		
-		
-	};
+public class GraphController {
+    private final Pane view;
 
-	public GraphController(GraphModel model) {
-		this.model = model;
-		VertexController controllerV;
-		EdgeController controllerE;
-		view = new GraphView(this, model);
-		for (VertexModel i : model.getVertices()) {
-			controllerV = new VertexController(i, this);
-			vertices.add(controllerV);
-			view.add(controllerV.getView());
-			controllerV.getModel().addObserver(observerForChangePrefferedSize);
-		}
-		for (EdgeModel i : model.getEdges()) {
-			controllerE = new EdgeController(i, this);
-			edges.add(controllerE);
-			view.add(controllerE.getView());
-			i.getVertex1().addObserver(i);
-			i.getVertex2().addObserver(i);
-		}
-		view.addMouseListener(this);
-		view.addMouseMotionListener(this);
-	}
+    private GraphModel model;
 
-	public GraphModel getModel() {
-		return model;
-	}
+    private Group graphGroup;
+    private Group vertexGroup;
+    private Group edgeGroup;
 
-	public JComponent getView() {
-		return view;
-	}
+    private EdgeController creatingEdge;
 
-	public void addVertex(VertexController vertex) {
-		model.addVertex(vertex.getModel());
-		vertices.add(vertex);
-		view.add(vertex.getView(), 0);
-		view.repaint();
-		vertex.getModel().addObserver(observerForChangePrefferedSize);
-	}
+    private boolean isDragging = false;
+    private double prevDragX;
+    private double prevDragY;
 
-	public void addVertex(VertexModel vertexModel) {
-		addVertex(new VertexController(vertexModel, this));
-	}
+    private List<VertexController> selectedVertices = new ArrayList<>();
+    private List<EdgeController> selectedEdges = new ArrayList<>();
 
-	public void addVertex(int x, int y) {
-		addVertex(new VertexModel(x, y));
-	}
-	
-	VertexController getController(VertexModel vertex) {
-		for (VertexController i : vertices) {
-			if (i.getModel().equals(vertex)) return i;
-		}
-		return null;
-	}
+    public GraphController(Pane workPane) {
+        this.view = workPane;
+    }
 
-	public void removeVertex(VertexModel vertex) {
-		removeVertex(getController(vertex).getView());
-	}
+    public void createGraph() {
+        clearGraph();
 
-	public void removeVertex(VertexView vertex) { 
-		List<EdgeModel> incidentEdges = model.getIncidentEdges(vertex.getModel());
-		for (EdgeModel i : incidentEdges) {
-			removeEdge(i);
-		}
-		view.remove(vertex);
-		view.repaint();
-		model.removeVertex(vertex.getModel());
-		vertices.remove(getController(vertex.getModel()));
-		
-	}
+        initializeGroups();
+        model = new GraphModel();
 
-	public void removeSelectedVertices() {
-		for (VertexView i : selectedVertices) {
-			removeVertex(i);			
-		}
-	}
+        addViewListeners();
+    }
 
-	public void addEdge(VertexModel v1, VertexModel v2) {
-		if (!model.isEdgeExist(v1, v2)) {
-			EdgeModel edge = new EdgeModel(v1, v2);
-			model.addEdge(edge);
-			EdgeController edgeController = new EdgeController(edge, this);
-			edges.add(edgeController);
-			view.add(edgeController.getView());
-			view.repaint();
-		}
-	}
+    public void createGraph(GraphModel model) {
+        createGraph();
+        this.model = model;
 
-	EdgeController getController(EdgeModel edge) {
-		for (EdgeController i : edges) {
-			if (i.getModel().equals(edge)) return i;
-		}
-		return null;
-	}
-	
-	EdgeController getController(VertexController vertex1, VertexController vertex2) {
-		VertexModel v1 = vertex1.getModel();
-		VertexModel v2 = vertex2.getModel();
-		for (EdgeController i: edges) {
-			if ((i.getModel().getVertex1().equals(v1) && i.getModel().getVertex2().equals(v2)) ||
-				(i.getModel().getVertex1().equals(v2) && i.getModel().getVertex2().equals(v1)))
-				return i;
-		}
-		return null;
-	}
+        VertexController vertexController;
+        for (VertexModel vertex: model.getVertexList()) {
+            vertexController = new VertexController(this, vertex);
+            vertexGroup.getChildren().add(vertexController.getView());
+        }
 
-	public void removeEdge(EdgeModel edge) {
-		removeEdge(getController(edge).getView());
-	}
+        EdgeController edgeController;
+        for (EdgeModel edge: model.getEdgeList()) {
+            edgeController = new EdgeController(this, edge.getStartVertex(), edge.getEndVertex());
+            edgeGroup.getChildren().add(edgeController.getView());
+        }
 
-	public void removeEdge(EdgeView edge) {
-		view.remove(edge);
-		view.repaint();
-		model.removeEdge(edge.getModel());
-		edges.remove(getController(edge.getModel()));
-	}
+    }
 
-	public void removeSelectedEdge() {
-		if (selectedEdge != null) {
-			removeEdge(selectedEdge);
-			selectedEdge = null;
-		}
-	}
+    private void addViewListeners() {
+        view.setOnMousePressed(event -> {
+            if (isDragging()) {
+                prevDragX = event.getX();
+                prevDragY = event.getY();
+            } else if (isEdgeCreating()) {
+                updateEdgeCreating(event.getX(), event.getY());
+                select(creatingEdge);
+            } else if (event.getButton().equals(MouseButton.PRIMARY) && event.isShiftDown()) {
+                VertexController vertex = addVertex(event.getX(), event.getY());
+                select(vertex);
+            } else {
+                deselectAll();
+            }
+        });
 
-	void startCreatingEdge(VertexView vertex1, VertexModel vertex2) {
-		isCreatingEdge = true;
-		edgeToCreate = new EdgeView(vertex1.getModel(), vertex2);
-		view.add(edgeToCreate);
-		view.repaint();
-	}
-	
-	void stopCreatingEdge() {
-		if (isCreatingEdge) {
-			isCreatingEdge = false;
-			view.remove(edgeToCreate);
-			view.repaint(); 
-		}
-	}
-	
-	void finishCreatingEdge(int x, int y) {
-		JComponent component = (JComponent) view.getComponentAt(x, y);
-		VertexView vertex2;
-		if (component instanceof VertexView) {
-			vertex2 = (VertexView) component;		
-			if (isCreatingEdge) {
-				addEdge(edgeToCreate.getModel().getVertex1(), vertex2.getModel());
-			}
-		}	
-		stopCreatingEdge();
-	}
-	
-	boolean isCreatingEdge() {
-		return isCreatingEdge;
-	}
+        view.setOnMouseDragged(event -> {
+            if (isDragging()) {
+                List<VertexModel> draggedVertices = new ArrayList<>();
+                double dX = event.getX() - prevDragX;
+                double dY = event.getY() - prevDragY;
 
-	public EditMode getMode() {
-		return mode;
-	}
-	
-	public void moveSelected(int x, int y) {
-		int dx = x;
-		int dy = y;
-		if (x < 0 || y < 0)
-			for (VertexView i : selectedVertices) {
-				VertexModel m = i.getModel();
-				dx = Math.max(dx, - m.getX());
-				dy = Math.max(dy, - m.getY());
-			}
-		for (VertexView i : selectedVertices) {
-			VertexModel m = i.getModel();
-			m.setLocation(dx + m.getX(), dy + m.getY());
-		}
-	}
-	
-	public void select(VertexView vertex) {
-		deselectAll();
-		addToSelection(vertex);
-	}
-	
-	public void addToSelection(VertexView vertex) {
-		if (!isSelected(vertex)) {
-			selectedVertices.add(vertex);
-			vertex.setColor(Color.BLUE);
-			view.setComponentZOrder(vertex, 0);
-		}
-	}
-	
-	public void select(EdgeView edge) {
-		deselectEdge();
-		selectedEdge = edge;
-		edge.setColor(Color.BLUE);
-		view.setComponentZOrder(edge, model.getVerticesCount());
-	}
-	
-	public void deselectEdge() {
-		if (selectedEdge != null) {
-			selectedEdge.setColor(Color.BLACK);
-			selectedEdge = null;
-		}
-	}
-	
-	public boolean isSelected(VertexView vertex) {
-		return selectedVertices.contains(vertex);
-	}
-	
-	public void deselect(VertexView vertex) {
-		if (isSelected(vertex)) {
-			vertex.setColor(Color.BLACK);
-			Iterator<VertexView> i = selectedVertices.iterator();
-			while (vertex != i.next()) {}
-			i.remove();
-			view.setComponentZOrder(vertex, selectedVertices.size());
-		}
-	}
-	
-	public void deselectAll() {
-		if (isCreatingEdge) {
-			view.remove(edgeToCreate);
-			view.repaint();
-			isCreatingEdge = false;
-		}
-		for (VertexView i : selectedVertices) {
-			i.setColor(Color.BLACK);
-		}
-		selectedVertices.clear();
-		deselectEdge();
-	}
-	
-	public void changeIdentifierOfSelectedVertex() {
-		if (selectedVertices.size() == 1 ) {
-			for (VertexView i : selectedVertices) {
-				String s = JOptionPane.showInputDialog("Change identifier", i.getModel().getIdentifier());
-				if (s != null)
-					i.getModel().setIdentifier(s);
-			}
-		}
-	}
-	
-	public void changeWeightOfSelectedEdge() {
-		if (selectedEdge != null ) {
-			String s = JOptionPane.showInputDialog("Change weight", selectedEdge.getModel().getWeight());
-			if (s != null) {
-				try {
-					selectedEdge.getModel().setWeight(Integer.valueOf(s));
-				}
-				catch (Exception e) {
-					JOptionPane.showMessageDialog(this.getView(), "Eggs are not supposed to be green.");
-				}		
-			}
-		}
-	}
+                for (VertexController vertex : selectedVertices) {
+                    draggedVertices.add(vertex.getModel());
+                    vertex.getModel().moveOn(dX, dY);
+                }
 
-	List<EdgeController> getIncidentEdges(VertexController vertex) {
-		List<EdgeController> e = new ArrayList<EdgeController> (); 
-		for (EdgeController i : edges) {
-			if (i.getModel().getVertex1().equals(vertex.getModel()) || 
-				i.getModel().getVertex2().equals(vertex.getModel())) {
-				e.add(i);
-			}
-		}
-		return e;
-	}
-	
-	@Override
-	protected ControllerInterface getCurrentController() {
-		switch(mode) {
-		case EDGE_MODE:
-			return graphControllerInEdgeMode;
-		case VERTEX_MODE:
-			return graphControllerInVertexMode;
-		default:
-			return null;
-		}		
-	}
+                for (EdgeController edge : selectedEdges) {
+                    VertexModel startVertex = edge.getModel().getStartVertex();
+                    VertexModel endVertex = edge.getModel().getEndVertex();
+                    if (!draggedVertices.contains(startVertex)) {
+                        draggedVertices.add(startVertex);
+                        startVertex.moveOn(dX, dY);
+                    }
+                    if (!draggedVertices.contains(endVertex)) {
+                        draggedVertices.add(endVertex);
+                        endVertex.moveOn(dX, dY);
+                    }
+                }
 
-	List<VertexController> getVertices() {
-		return new ArrayList<VertexController>(vertices); 
-	}
-	
-	List<EdgeController> getEdges() {
-		return new ArrayList<EdgeController>(edges);
-	}
+                draggedVertices.clear();
 
-	public void setMode(EditMode mode) {
-		this.mode = mode;
-		deselectAll();
-	}
-	
+                prevDragX = event.getX();
+                prevDragY = event.getY();
+            } else if (isEdgeCreating()) {
+                updateEdgeCreating(event.getX(), event.getY());
+            }
+        });
+
+        view.setOnMouseReleased(event -> {
+            if (isDragging()) {
+                setIsDragging(false);
+            }
+            if (isEdgeCreating()) {
+                abortEdgeCreating();
+            }
+        });
+    }
+
+    private VertexController addVertex(double x, double y) {
+        VertexController vertex = new VertexController(this);
+        vertex.getModel().setX(x);
+        vertex.getModel().setY(y);
+        vertexGroup.getChildren().add(vertex.getView());
+        model.add(vertex.getModel());
+        return vertex;
+    }
+
+    private void initializeGroups() {
+        graphGroup = new Group();
+        vertexGroup = new Group();
+        edgeGroup = new Group();
+
+        graphGroup.getChildren().addAll(edgeGroup, vertexGroup);
+        view.getChildren().add(graphGroup);
+    }
+
+    public void clearGraph() {
+        if (graphGroup != null) {
+            graphGroup.setDisable(true);
+            view.getChildren().remove(graphGroup);
+            model = null;
+            graphGroup = null;
+            edgeGroup = null;
+            vertexGroup = null;
+        }
+    }
+
+    public void startEdgeCreating(VertexModel startVertex) {
+        VertexModel secondVertex = new VertexModel();
+        creatingEdge = new EdgeController(this, startVertex, secondVertex);
+        edgeGroup.getChildren().add(creatingEdge.getView());
+    }
+
+    public void finishEdgeCreating(VertexModel endVertex) {
+        if (isEdgeCreating()) {
+            if (creatingEdge.getModel().getStartVertex() != endVertex) {
+                creatingEdge.setEndVertex(endVertex);
+                model.add(creatingEdge.getModel());
+            } else {
+                abortEdgeCreating();
+            }
+            creatingEdge = null;
+        }
+    }
+
+    public void abortEdgeCreating() {
+        if (creatingEdge != null) {
+            edgeGroup.getChildren().remove(creatingEdge.getView());
+            selectedEdges.remove(creatingEdge);
+            creatingEdge = null;
+        }
+    }
+
+    public void updateEdgeCreating(double endX, double endY) {
+        creatingEdge.getModel().getEndVertex().setX(endX);
+        creatingEdge.getModel().getEndVertex().setY(endY);
+    }
+
+    public boolean isEdgeCreating() {
+        return creatingEdge != null;
+    }
+
+    public void select(VertexController vertexController) {
+        deselectAll();
+        addToSelection(vertexController);
+    }
+
+    public void select(EdgeController edgeController) {
+        deselectAll();
+        addToSelection(edgeController);
+    }
+
+    public void deselectAll() {
+        for (VertexController vertex: selectedVertices) {
+            vertex.getView().deselect();
+        }
+        for (EdgeController edge: selectedEdges) {
+            edge.getView().deselect();
+        }
+        selectedEdges.clear();
+        selectedVertices.clear();
+    }
+
+    public void addToSelection(VertexController vertex) {
+        if (!selectedVertices.contains(vertex)) {
+            selectedVertices.add(vertex);
+            vertex.getView().select();
+        }
+    }
+
+    public void addToSelection(EdgeController edge) {
+        if (!selectedEdges.contains(edge)) {
+            selectedEdges.add(edge);
+            edge.getView().select();
+        }
+    }
+
+    public boolean isDragging() {
+        return isDragging;
+    }
+
+    public void startDragSelected() {
+        setIsDragging(true);
+    }
+
+    public void stopDragSelected() {
+        setIsDragging(false);
+    }
+
+    private void setIsDragging(boolean isDragging) {
+        this.isDragging = isDragging;
+    }
+
+    public Pane getView() {
+        return view;
+    }
+
+    public GraphModel getModel() {
+        return model;
+    }
 }

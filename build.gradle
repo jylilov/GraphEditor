@@ -4,4 +4,4 @@ version '0.1.0'
 apply plugin: 'application'
 
 sourceCompatibility = 1.8
-mainClassName = 'by.jylilov.grapheditor.Run'
+mainClassName = 'by.jylilov.grapheditor.GraphEditorApplication'
