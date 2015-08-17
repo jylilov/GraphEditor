@@ -9,6 +9,14 @@ public class VertexModel implements Externalizable {
     private DoubleProperty x = new SimpleDoubleProperty(0);
     private DoubleProperty y = new SimpleDoubleProperty(0);
 
+    public VertexModel() {
+    }
+
+    public VertexModel(double x, double y) {
+        setX(x);
+        setY(y);
+    }
+
     public void moveOn(double x, double y) {
         setX(getX() + x);
         setY(getY() + y);

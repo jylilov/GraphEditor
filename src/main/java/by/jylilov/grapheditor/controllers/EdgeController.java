@@ -6,7 +6,8 @@ import by.jylilov.grapheditor.views.EdgeView;
 import javafx.beans.property.DoubleProperty;
 
 public class EdgeController {
-    private final GraphController graphController;
+    private final SelectionController selectionController;
+    private final DragSelectedController dragSelectedController;
 
     private final EdgeModel model;
     private final EdgeView view;
@@ -16,7 +17,8 @@ public class EdgeController {
     }
 
     public EdgeController(GraphController graphController, EdgeModel model) {
-        this.graphController = graphController;
+        this.selectionController = graphController.getSelectionController();
+        this.dragSelectedController = graphController.getDragSelectedController();
         this.model = model;
         view = new EdgeView();
 
@@ -29,11 +31,11 @@ public class EdgeController {
     private void addListenersOnView() {
         view.setOnMousePressed(event -> {
             if (event.isControlDown()) {
-                graphController.addToSelection(this);
+                selectionController.addToSelection(this);
             } else {
-                graphController.select(this);
+                selectionController.select(this);
             }
-            graphController.startDragSelected();
+            dragSelectedController.startDragSelected();
         });
     }
 

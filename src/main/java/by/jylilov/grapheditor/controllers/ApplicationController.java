@@ -1,6 +1,7 @@
 package by.jylilov.grapheditor.controllers;
 
 import by.jylilov.grapheditor.models.GraphModel;
+import by.jylilov.grapheditor.views.GraphView;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,8 +21,7 @@ public class ApplicationController implements Initializable {
     @FXML
     private Node splashLabel;
 
-    @FXML
-    private Node root;
+    private GraphView graphView;
 
     private GraphController graphController;
 
@@ -29,23 +29,30 @@ public class ApplicationController implements Initializable {
     private File workingFile = null;
 
     public void initialize(URL location, ResourceBundle resources) {
-        graphController = new GraphController(workPane);
+        initializeGraphController();
         initializeGraphFileChooser();
     }
 
+    private void initializeGraphController() {
+        graphView = new GraphView();
+        graphView.setVisible(false);
+        workPane.getChildren().add(graphView);
+        graphController = new GraphController(graphView);
+    }
+
     public void newGraph() {
+        graphController.clear();
         splashLabel.setVisible(false);
-        workPane.setVisible(true);
-        graphController.createGraph();
+        graphView.setVisible(true);
     }
 
     public void openGraph() {
-        File file = fileChooser.showOpenDialog(root.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(workPane.getScene().getWindow());
         try {
             GraphModel model = readGraph(file);
             splashLabel.setVisible(false);
-            workPane.setVisible(true);
-            graphController.createGraph(model);
+            graphView.setVisible(true);
+            graphController.update(model);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -92,7 +99,7 @@ public class ApplicationController implements Initializable {
     }
 
     public void saveAsGraph() {
-        File file = fileChooser.showSaveDialog(root.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(workPane.getScene().getWindow());
         try {
             writeGraph(file);
             workingFile = file;
@@ -102,9 +109,9 @@ public class ApplicationController implements Initializable {
     }
 
     public void closeGraph() {
-        workPane.setVisible(false);
+        graphView.setVisible(false);
         splashLabel.setVisible(true);
-        graphController.clearGraph();
+        graphController.clear();
         workingFile = null;
     }
 

@@ -5,7 +5,9 @@ import by.jylilov.grapheditor.views.VertexView;
 import javafx.scene.input.MouseButton;
 
 public class VertexController {
-    private final GraphController graphController;
+    private final EdgeCreatingController edgeCreatingController;
+    private final SelectionController selectionController;
+    private final DragSelectedController dragSelectedController;
 
     private final VertexView view;
     private final VertexModel model;
@@ -15,7 +17,9 @@ public class VertexController {
     }
 
     public VertexController(GraphController graphController, VertexModel model) {
-        this.graphController = graphController;
+        this.edgeCreatingController = graphController.getEdgeCreatingController();
+        this.selectionController = graphController.getSelectionController();
+        this.dragSelectedController = graphController.getDragSelectedController();
         this.model = model;
         view = new VertexView();
 
@@ -31,14 +35,14 @@ public class VertexController {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 if (event.isShiftDown()) {
                     event.setDragDetect(true);
-                    graphController.startEdgeCreating(model);
+                    edgeCreatingController.startEdgeCreating(model);
                 } else {
                     if (event.isControlDown()) {
-                        graphController.addToSelection(this);
+                        selectionController.addToSelection(this);
                     } else {
-                        graphController.select(this);
+                        selectionController.select(this);
                     }
-                    graphController.startDragSelected();
+                    dragSelectedController.startDragSelected();
                 }
             }
         });
@@ -53,7 +57,7 @@ public class VertexController {
         });
 
         view.setOnMouseDragReleased(event -> {
-            graphController.finishEdgeCreating(model);
+            edgeCreatingController.finishEdgeCreating(model);
             event.consume();
         });
     }

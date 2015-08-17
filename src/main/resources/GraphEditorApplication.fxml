@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.jylilov.grapheditor.controllers.ApplicationController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.jylilov.grapheditor.controllers.ApplicationController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -55,9 +55,8 @@
    <center>
       <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
          <content>
-            <StackPane minHeight="-Infinity" minWidth="-Infinity">
+            <StackPane fx:id="workPane" minHeight="-Infinity" minWidth="-Infinity">
                <children>
-                  <AnchorPane fx:id="workPane" minHeight="-Infinity" minWidth="-Infinity" visible="false" />
                   <Label fx:id="splashLabel" text="Open or create new graph through &quot;File&quot; menu" textFill="#8d8d8d">
                      <font>
                         <Font size="24.0" />

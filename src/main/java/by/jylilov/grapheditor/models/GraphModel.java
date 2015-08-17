@@ -56,4 +56,9 @@ public class GraphModel implements Serializable {
     public List<EdgeModel> getEdgeList() {
         return edgeList;
     }
+
+    public void clear() {
+        edgeList.clear();
+        vertexList.clear();
+    }
 }
