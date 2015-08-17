@@ -57,4 +57,5 @@ public class VertexModel implements Externalizable {
         setX(in.readDouble());
         setY(in.readDouble());
     }
+
 }

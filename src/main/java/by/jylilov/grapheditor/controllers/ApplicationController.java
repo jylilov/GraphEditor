@@ -118,4 +118,8 @@ public class ApplicationController implements Initializable {
     public void exitApplication() {
         Platform.exit();
     }
+
+    public void deleteSelected() {
+        graphController.getSelectionController().deleteSelected();
+    }
 }

@@ -30,7 +30,7 @@
                         <MenuItem disable="true" mnemonicParsing="false" text="Change identifier" />
                         <MenuItem disable="true" mnemonicParsing="false" text="Change weight" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem mnemonicParsing="false" onAction="#deleteSelected" text="Delete" />
                         <MenuItem disable="true" mnemonicParsing="false" text="Make algorithm" />
                      </items>
                 </Menu>
@@ -45,7 +45,7 @@
               <items>
                 <Button disable="true" mnemonicParsing="false" text="Change identifier" />
                   <Button disable="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Change weight" />
-                  <Button layoutX="121.0" layoutY="10.0" mnemonicParsing="false" text="Delete" />
+                  <Button layoutX="121.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteSelected" text="Delete" />
                   <Button disable="true" layoutX="221.0" layoutY="10.0" mnemonicParsing="false" text="Make algorithm" />
               </items>
             </ToolBar>

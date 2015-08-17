@@ -1,5 +1,6 @@
 package by.jylilov.grapheditor.controllers;
 
+import by.jylilov.grapheditor.models.EdgeModel;
 import by.jylilov.grapheditor.models.VertexModel;
 
 public class EdgeCreatingController {
@@ -19,9 +20,11 @@ public class EdgeCreatingController {
 
     public void finishEdgeCreating(VertexModel endVertex) {
         if (isEdgeCreating()) {
-            if (creatingEdge.getModel().getStartVertex() != endVertex) {
-                creatingEdge.setEndVertex(endVertex);
-                graphController.getModel().add(creatingEdge.getModel());
+            EdgeModel edgeModel = creatingEdge.getModel();
+            if (edgeModel.getStartVertex() != endVertex) {
+                edgeModel.setEndVertex(endVertex);
+                graphController.getView().remove(creatingEdge.getView());
+                graphController.addNewEdge(edgeModel);
                 creatingEdge = null;
             } else {
                 abortEdgeCreating();

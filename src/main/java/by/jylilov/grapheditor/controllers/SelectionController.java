@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionController {
+    private final GraphController graphController;
+
     private List<VertexController> selectedVertices = new ArrayList<>();
     private List<EdgeController> selectedEdges = new ArrayList<>();
+
+    public SelectionController(GraphController graphController) {
+        this.graphController = graphController;
+    }
 
     public void select(VertexController vertexController) {
         deselectAll();
@@ -40,6 +46,18 @@ public class SelectionController {
             selectedEdges.add(edge);
             edge.getView().select();
         }
+    }
+
+    public void deleteSelected() {
+        for (VertexController vertexController: selectedVertices) {
+            graphController.removeVertex(vertexController.getModel());
+        }
+
+        for (EdgeController edgeController: selectedEdges) {
+            graphController.removeEdge(edgeController.getModel());
+        }
+
+        deselectAll();
     }
 
     public List<VertexController> getSelectedVertices() {

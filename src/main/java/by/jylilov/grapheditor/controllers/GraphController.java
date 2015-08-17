@@ -6,9 +6,15 @@ import by.jylilov.grapheditor.models.VertexModel;
 import by.jylilov.grapheditor.views.GraphView;
 import javafx.scene.input.MouseButton;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class GraphController {
     private final GraphView view;
     private final GraphModel model;
+
+    private final Map<VertexModel, VertexController> vertexMap = new HashMap<>();
+    private final Map<EdgeModel, EdgeController> edgeMap = new HashMap<>();
 
     private SelectionController selectionController;
     private EdgeCreatingController edgeCreatingController;
@@ -18,7 +24,7 @@ public class GraphController {
         this.view = view;
         this.model = new GraphModel();
 
-        selectionController = new SelectionController();
+        selectionController = new SelectionController(this);
         edgeCreatingController = new EdgeCreatingController(this);
         dragSelectedController = new DragSelectedController(selectionController);
 
@@ -31,20 +37,41 @@ public class GraphController {
         model.getEdgeList().forEach(this::addNewEdge);
     }
 
-    private void addNewVertex(VertexModel vertex) {
+    public void addNewVertex(VertexModel vertex) {
         VertexController vertexController = new VertexController(this, vertex);
         model.add(vertex);
         view.add(vertexController.getView());
+        vertexMap.put(vertex, vertexController);
     }
 
-    private void addNewVertex(double x, double y) {
+    public void addNewVertex(double x, double y) {
         addNewVertex(new VertexModel(x, y));
     }
 
-    private void addNewEdge(EdgeModel edge) {
+    public void removeVertex(VertexModel vertex) {
+        VertexController vertexController = vertexMap.get(vertex);
+        if (vertexController != null) {
+            model.getIncidentEdgeList(vertex).forEach(this::removeEdge);
+            model.remove(vertex);
+            view.remove(vertexController.getView());
+            vertexMap.remove(vertex);
+        }
+    }
+
+    public void addNewEdge(EdgeModel edge) {
         EdgeController edgeController = new EdgeController(this, edge);
         model.add(edge);
         view.add(edgeController.getView());
+        edgeMap.put(edge, edgeController);
+    }
+
+    public void removeEdge(EdgeModel edge) {
+        EdgeController edgeController = edgeMap.get(edge);
+        if (edgeController != null) {
+            model.remove(edge);
+            view.remove(edgeController.getView());
+            edgeMap.remove(edge);
+        }
     }
 
     private void addViewListeners() {
@@ -52,6 +79,7 @@ public class GraphController {
             if (dragSelectedController.isDragging()) {
                 dragSelectedController.update(event.getX(), event.getY());
             } else if (edgeCreatingController.isEdgeCreating()) {
+                selectionController.deselectAll();
                 edgeCreatingController.updateEdgeCreating(event.getX(), event.getY());
             } else if (event.getButton().equals(MouseButton.PRIMARY) && event.isShiftDown()) {
                 addNewVertex(event.getX(), event.getY());

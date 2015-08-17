@@ -39,10 +39,10 @@ public class GraphModel implements Serializable {
         }
     }
 
-    public List<EdgeModel> getIncidentEdgeList(VertexModel model) {
+    public List<EdgeModel> getIncidentEdgeList(VertexModel vertex) {
         List<EdgeModel> answer = new ArrayList<>();
         for (EdgeModel edge: edgeList) {
-            if (edge.getStartVertex() == model || edge.getEndVertex() == model) {
+            if (edge.getStartVertex() == vertex || edge.getEndVertex() == vertex) {
                 answer.add(edge);
             }
         }
