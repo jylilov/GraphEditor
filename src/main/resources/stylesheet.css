@@ -1,0 +1,43 @@
+.label-edge-view {
+    -fx-padding: 2;
+    -fx-text-fill: BLACK;
+    -fx-font-size: 12;
+
+    -fx-background-color: WHITESMOKE;
+    -fx-background-radius: 40;
+
+    -fx-border-radius: 40;
+    -fx-border-color: BLACK;
+    -fx-border-width: 4;
+}
+
+.label-edge-view-selected {
+    -fx-text-fill: DARKCYAN;
+    -fx-border-color: DARKCYAN;
+}
+
+.line-edge-view {
+    -fx-stroke: BLACK;
+    -fx-stroke-width: 5;
+}
+
+.line-edge-view-selected {
+    -fx-stroke: DARKCYAN;
+}
+
+.vertex-view {
+    -fx-min-width: 32;
+    -fx-padding: 5;
+
+    -fx-text-fill: WHITESMOKE;
+    -fx-alignment: center;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 40;
+    -fx-background-color: BLACK;
+}
+
+.vertex-view-selected {
+    -fx-background-color: DARKCYAN;
+}

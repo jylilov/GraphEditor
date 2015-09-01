@@ -15,8 +15,12 @@ public class GraphEditorApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Parent root = FXMLLoader.load(getClass().getResource("/GraphEditorApplication.fxml"));
-		primaryStage.setScene(new Scene(root));
-		primaryStage.setTitle("Graph Editor");
+
+		Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Graph Editor");
 		primaryStage.show();
 	}
 

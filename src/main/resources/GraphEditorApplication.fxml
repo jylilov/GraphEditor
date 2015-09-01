@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -27,9 +24,6 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                      <items>
-                        <MenuItem disable="true" mnemonicParsing="false" text="Change identifier" />
-                        <MenuItem disable="true" mnemonicParsing="false" text="Change weight" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#deleteSelected" text="Delete" />
                         <MenuItem disable="true" mnemonicParsing="false" text="Make algorithm" />
                      </items>
@@ -43,8 +37,6 @@
             </MenuBar>
             <ToolBar>
               <items>
-                <Button disable="true" mnemonicParsing="false" text="Change identifier" />
-                  <Button disable="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Change weight" />
                   <Button layoutX="121.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteSelected" text="Delete" />
                   <Button disable="true" layoutX="221.0" layoutY="10.0" mnemonicParsing="false" text="Make algorithm" />
               </items>

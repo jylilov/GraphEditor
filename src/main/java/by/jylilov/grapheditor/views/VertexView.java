@@ -1,22 +1,31 @@
 package by.jylilov.grapheditor.views;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.beans.property.StringProperty;
+import javafx.scene.Group;
+import javafx.scene.control.Label;
 
-public class VertexView extends Circle {
+public class VertexView extends Group {
+
+    private Label label = new Label();
 
     public VertexView() {
-        setRadius(15);
-        setStrokeWidth(7);
-        setFill(Color.WHITESMOKE);
-        setStroke(Color.BLACK);
+        getChildren().addAll(label);
+
+        label.getStyleClass().add("vertex-view");
+
+        label.layoutXProperty().bind(label.widthProperty().divide(-2));
+        label.layoutYProperty().bind(label.heightProperty().divide(-2));
     }
 
     public void select() {
-        setStroke(Color.DARKCYAN);
+        label.getStyleClass().add("vertex-view-selected");
     }
 
     public void deselect() {
-        setStroke(Color.BLACK);
+        label.getStyleClass().remove("vertex-view-selected");
+    }
+
+    public StringProperty textProperty() {
+        return label.textProperty();
     }
 }

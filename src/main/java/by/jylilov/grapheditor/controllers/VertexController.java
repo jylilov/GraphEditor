@@ -1,6 +1,7 @@
 package by.jylilov.grapheditor.controllers;
 
 import by.jylilov.grapheditor.models.VertexModel;
+import by.jylilov.grapheditor.utils.DialogUtils;
 import by.jylilov.grapheditor.views.VertexView;
 import javafx.scene.input.MouseButton;
 
@@ -12,10 +13,6 @@ public class VertexController {
     private final VertexView view;
     private final VertexModel model;
 
-    public VertexController(GraphController graphController) {
-        this(graphController, new VertexModel());
-    }
-
     public VertexController(GraphController graphController, VertexModel model) {
         this.edgeCreatingController = graphController.getEdgeCreatingController();
         this.selectionController = graphController.getSelectionController();
@@ -25,6 +22,7 @@ public class VertexController {
 
         view.layoutXProperty().bindBidirectional(model.xProperty());
         view.layoutYProperty().bindBidirectional(model.yProperty());
+        view.textProperty().bind(model.nameProperty());
 
         addViewListeners();
 
@@ -39,10 +37,16 @@ public class VertexController {
                 } else {
                     if (event.isControlDown()) {
                         selectionController.addToSelection(this);
+                        dragSelectedController.startDragSelected();
                     } else {
-                        selectionController.select(this);
+                        if (event.getClickCount() == 2) {
+                            DialogUtils.chooseVertexName(model.nameProperty());
+                            dragSelectedController.stopDragSelected();
+                        } else {
+                            selectionController.select(this);
+                            dragSelectedController.startDragSelected();
+                        }
                     }
-                    dragSelectedController.startDragSelected();
                 }
             }
         });

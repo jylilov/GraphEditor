@@ -2,6 +2,7 @@ package by.jylilov.grapheditor.controllers;
 
 import by.jylilov.grapheditor.models.EdgeModel;
 import by.jylilov.grapheditor.models.VertexModel;
+import by.jylilov.grapheditor.utils.DialogUtils;
 import by.jylilov.grapheditor.views.EdgeView;
 import javafx.beans.property.DoubleProperty;
 
@@ -24,6 +25,7 @@ public class EdgeController {
 
         setStartVertex(model.getStartVertex());
         setEndVertex(model.getEndVertex());
+        view.labelProperty().bind(model.weightProperty().asString());
 
         addListenersOnView();
     }
@@ -32,10 +34,16 @@ public class EdgeController {
         view.setOnMousePressed(event -> {
             if (event.isControlDown()) {
                 selectionController.addToSelection(this);
+                dragSelectedController.startDragSelected();
             } else {
-                selectionController.select(this);
+                if (event.getClickCount() == 2) {
+                    DialogUtils.chooseEdgeWeight(model.weightProperty());
+                    dragSelectedController.stopDragSelected();
+                } else {
+                    selectionController.select(this);
+                    dragSelectedController.startDragSelected();
+                }
             }
-            dragSelectedController.startDragSelected();
         });
     }
 

@@ -48,15 +48,15 @@ public class ApplicationController implements Initializable {
 
     public void openGraph() {
         File file = fileChooser.showOpenDialog(workPane.getScene().getWindow());
-        try {
-            GraphModel model = readGraph(file);
-            splashLabel.setVisible(false);
-            graphView.setVisible(true);
-            graphController.update(model);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        if (file != null) {
+            try {
+                GraphModel model = readGraph(file);
+                splashLabel.setVisible(false);
+                graphView.setVisible(true);
+                graphController.update(model);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

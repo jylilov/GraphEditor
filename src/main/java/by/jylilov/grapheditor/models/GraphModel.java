@@ -2,8 +2,8 @@ package by.jylilov.grapheditor.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GraphModel implements Serializable {
     private final List<VertexModel> vertexList = new ArrayList<>();
@@ -29,24 +29,8 @@ public class GraphModel implements Serializable {
         edgeList.remove(edge);
     }
 
-    public void addAll(Collection elementCollection) {
-        for (Object element: elementCollection) {
-            if (element instanceof VertexModel) {
-                add((VertexModel)element);
-            } else if (element instanceof EdgeModel) {
-                add((EdgeModel)element);
-            }
-        }
-    }
-
     public List<EdgeModel> getIncidentEdgeList(VertexModel vertex) {
-        List<EdgeModel> answer = new ArrayList<>();
-        for (EdgeModel edge: edgeList) {
-            if (edge.getStartVertex() == vertex || edge.getEndVertex() == vertex) {
-                answer.add(edge);
-            }
-        }
-        return answer;
+        return edgeList.stream().filter(edge -> edge.isIncidentTo(vertex)).collect(Collectors.toList());
     }
 
     public List<VertexModel> getVertexList() {
